@@ -6,10 +6,10 @@ export default function TaskItem({ task }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task.title);
   const [editDescription, setEditDescription] = useState(task.description);
+  const createdDate = task.createdAt
+    ? new Date(task.createdAt).toLocaleDateString()
+    : "Today";
 
-  // Καλείται η συνάρτηση editTask και ενημερώνει το task με το συγκεκριμένο id,
-  // περνώντας ένα νέο αντικείμενο που περιέχει όλα τα υπάρχοντα δεδομένα του task,
-  // με ενημερωμένο τίτλο και περιγραφή από τα editTitle και editDescription.
   const handleEdit = () => {
     editTask(task.id, {
       ...task,
@@ -19,48 +19,54 @@ export default function TaskItem({ task }) {
     setIsEditing(false);
   };
 
-  // Δημιουργία και λειτουργία φόρμας Editing των tasks και των κουμπιών "save" , "Cancel".
-
   return (
     <div className={`task-item ${task.completed ? "completed" : ""}`}>
       {isEditing ? (
         <>
-          <input
-            type="text"
-            placeholder="Title Update..."
-            className="task-input"
-            value={editTitle}
-            onChange={(e) => setEditTitle(e.target.value)}
-          />
-          <textarea
-            placeholder="Text Update..."
-            className="task-area"
-            value={editDescription}
-            onChange={(e) => setEditDescription(e.target.value)}
-          />
-          <div className="btn-group">
-            <button className="save" onClick={handleEdit}>
-              Save
-            </button>
-            <button className="cancel" onClick={() => setIsEditing(false)}>
-              Cancel
-            </button>
+          <div className="task-edit">
+            <input
+              type="text"
+              placeholder="Update title"
+              className="task-input"
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+            />
+            <textarea
+              placeholder="Update details"
+              className="task-area"
+              value={editDescription}
+              onChange={(e) => setEditDescription(e.target.value)}
+            />
+            <div className="btn-group">
+              <button className="save" onClick={handleEdit}>
+                Save
+              </button>
+              <button className="cancel" onClick={() => setIsEditing(false)}>
+                Cancel
+              </button>
+            </div>
           </div>
         </>
       ) : (
-        // Δημιουργία και λειτουργία κουμπιών "Undo","Complete", "Edit","Delete"
         <>
           <div className="task-header">
-            <h3>{task.title}</h3>
+            <div>
+              <h3>{task.title}</h3>
+              <span className="task-meta">Created {createdDate}</span>
+            </div>
             <div className="task-actions">
-              <button onClick={() => toggleComplete(task.id)}>
+              <button className="ghost" onClick={() => toggleComplete(task.id)}>
                 {task.completed ? "Undo" : "Complete"}
               </button>
-              <button onClick={() => setIsEditing(true)}>Edit</button>
-              <button onClick={() => deleteTask(task.id)}>Delete</button>
+              <button className="ghost" onClick={() => setIsEditing(true)}>
+                Edit
+              </button>
+              <button className="ghost danger" onClick={() => deleteTask(task.id)}>
+                Delete
+              </button>
             </div>
           </div>
-          <p>{task.description}</p>
+          <p>{task.description || "No additional details provided."}</p>
         </>
       )}
     </div>
