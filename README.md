@@ -307,4 +307,4 @@ This project showcases my personal skills relevant to software engineer/web deve
 
 ## Project Goal
 
-GrindSpot is designed as a portfolio-project, production-style codebase that demonstrates not only implementation ability, but also architecture clarity, maintainability, and delivery discipline expected in professional software teams.
+GrindSpot is designed as one of my portfolio-projects, included production-style codebase that demonstrates not only implementation ability, but also architecture clarity, maintainability, and delivery discipline expected in professional software teams.
