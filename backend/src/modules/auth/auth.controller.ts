@@ -63,7 +63,7 @@ export const refresh = asyncHandler(
       });
 
       res.json({ accessToken });
-    } catch (error) {
+    } catch {
       next(new AppError('Invalid refresh token', 401));
     }
   }

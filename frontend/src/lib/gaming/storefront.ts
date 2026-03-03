@@ -78,7 +78,7 @@ function readGuestCompareIds(): string[] {
 
     const normalized = parsed.filter((item): item is string => typeof item === "string");
     return [...new Set(normalized)].slice(0, DEFAULT_STOREFRONT_STATE.compareLimit);
-  } catch (_error) {
+  } catch {
     localStorage.removeItem(GUEST_COMPARE_STORAGE_KEY);
     return [];
   }

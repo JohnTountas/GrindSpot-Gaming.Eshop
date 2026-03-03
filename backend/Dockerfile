@@ -1,20 +1,32 @@
-# Builds the backend runtime image with production-ready defaults.
-FROM node:20-alpine
+# ---------- Build Stage ----------
+FROM node:20 AS builder
 
 WORKDIR /app
 
-# Install dependencies
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
-# Copy source
 COPY . .
 
 # Generate Prisma Client
 RUN npx prisma generate
 
-# Expose port
+# Build TypeScript → dist
+RUN npm run build
+
+
+# ---------- Production Stage ----------
+FROM node:18
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install --omit=dev
+
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+
 EXPOSE 5000
 
-# Start application
-CMD ["npm", "run", "dev"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]

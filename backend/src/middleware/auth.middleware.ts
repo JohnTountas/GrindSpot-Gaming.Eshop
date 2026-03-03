@@ -36,7 +36,7 @@ export const authenticate = async (
     };
 
     next();
-  } catch (error) {
+  } catch {
     next(new AppError('Invalid or expired token', 401));
   }
 };

@@ -119,7 +119,7 @@ function redactDatabaseUrl(url: string): string {
       parsed.password = "***";
     }
     return parsed.toString();
-  } catch (_error) {
+  } catch {
     return "(invalid DATABASE_URL format)";
   }
 }

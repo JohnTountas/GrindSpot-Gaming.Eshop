@@ -12,7 +12,7 @@ export function getStoredUser(): User | null {
 
   try {
     return JSON.parse(raw) as User;
-  } catch (_error) {
+  } catch {
     localStorage.removeItem('user');
     return null;
   }

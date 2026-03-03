@@ -6,15 +6,15 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: grindspot
-      POSTGRES_PASSWORD: grindspot_password
-      POSTGRES_DB: grindspot
+      POSTGRES_PASSWORD: MYPASSWORD
+      POSTGRES_DB: grindspot_db
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U grindspot"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
       retries: 5
 
@@ -28,7 +28,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://grindspot:grindspot_password@postgres:5432/grindspot
+      DATABASE_URL: postgresql://grindspot:MYPASSWORD@postgres:5432/grindspot_db
       JWT_SECRET: your-super-secret-jwt-key-change-in-production
       JWT_REFRESH_SECRET: your-super-secret-refresh-key-change-in-production
       JWT_EXPIRES_IN: 15m
@@ -36,30 +36,25 @@ services:
       PORT: 5000
       NODE_ENV: development
       CORS_ORIGIN: http://localhost:3000
-      STRIPE_SECRET_KEY: stripe_secret_key
+      STRIPE_SECRET_KEY: sk_test_your_stripe_secret_key
     ports:
       - "5050:5000"
     volumes:
-      - ./backend:/app
-      - /app/node_modules
       - ./backend/uploads:/app/uploads
-    command: npm run dev
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:5050/api
+        VITE_STRIPE_PUBLIC_KEY: pk_test_your_stripe_public_key
     container_name: grindspot-frontend
     restart: unless-stopped
-    environment:
-      VITE_API_URL: http://localhost:5050/api
-      VITE_STRIPE_PUBLIC_KEY: pk_test_your_stripe_public_key
     ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    command: npm run dev
+      - "3000:80"
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
