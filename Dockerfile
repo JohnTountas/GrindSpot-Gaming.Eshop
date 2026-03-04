@@ -34,8 +34,6 @@ ARG VITE_API_URL=/api
 ARG VITE_STRIPE_PUBLIC_KEY=pk_test_your_stripe_public_key
 ENV VITE_API_URL=${VITE_API_URL}
 ENV VITE_STRIPE_PUBLIC_KEY=${VITE_STRIPE_PUBLIC_KEY}
-
-RUN npx prisma generate
 RUN npm run build
 
 
