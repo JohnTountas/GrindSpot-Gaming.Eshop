@@ -327,11 +327,11 @@ function ProductDetail() {
               }}
             />
 
-            <span className="absolute left-3 top-3 rounded-full border border-primary-300/55 bg-white/88 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.11em] text-primary-800 shadow-sm backdrop-blur-sm">
+            <span className="absolute left-3 top-3 rounded-full border border-primary-300/50 bg-white/88 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.11em] text-primary-800 shadow-sm backdrop-blur-sm">
               {product.category?.name ?? "Collection"}
             </span>
-            <span className="pointer-events-none absolute bottom-3 right-3 rounded-full border border-primary-300/55 bg-white/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.11em] text-primary-700 shadow-sm backdrop-blur-sm">
-              {isLoupeActive ? "Zoom on" : "Click for zoom"}
+            <span className="pointer-events-none absolute bottom-3 right-3 rounded-full border border-primary-300/55 bg-white/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.11em] text-primary-700 shadow-sm">
+              {isLoupeActive ? "Zoom on" : "Click for Zoom"}
             </span>
           </div>
           <div className="mt-4 flex flex-wrap gap-2 text-xs text-primary-600">
