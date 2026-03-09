@@ -4,7 +4,7 @@ A Full-stack gaming e-commerce monorepo built with React, Express, Prisma, and P
 
 The repository is structured like a production-style application rather than a tutorial sandbox: the backend owns domain logic and data access, the frontend is feature-oriented, and deployment is handled through Docker and Fly.io.
 
-## -------------- THE PROJECT IS LIVE HERE: ----------------|
+## -------------- THE PROJECT IS LIVE HERE: ------------|
 
 ### - https://grindspot-fly-app.fly.dev/
 
