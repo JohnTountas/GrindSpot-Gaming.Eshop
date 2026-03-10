@@ -42,9 +42,7 @@ function App() {
             <Route path="register" element={<Register />} />
 
             {/* Authenticated customer-only routes */}
-            <Route path="checkout" element={
-              <ProtectedRoute><Checkout /></ProtectedRoute>
-            } />
+            <Route path="checkout" element={<Checkout />} />
             <Route path="orders" element={
               <ProtectedRoute><Orders /></ProtectedRoute>
             } />

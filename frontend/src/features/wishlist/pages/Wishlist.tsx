@@ -2,46 +2,17 @@
  * User-specific wishlist page with quick cart actions.
  */
 import { useMemo, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import api from '@/lib/api/client';
 import { getApiErrorMessage } from '@/lib/api/error';
 import { useWishlist } from '@/lib/gaming/storefront';
 import { showCartAddedToast } from '@/lib/ui/toast';
 import { Product } from '@/types';
-
-// Formats numeric values into EUR currency output for consistent UI pricing.
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-// Renders wishlist placeholders while personalized products are loading.
-function LoadingWishlist() {
-  return (
-    <section aria-label="Loading wishlist" className="space-y-5">
-      <div className="surface-card p-5">
-        <div className="skeleton h-8 w-48" />
-        <div className="mt-3 skeleton h-4 w-72" />
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <article key={index} className="surface-card p-4">
-            <div className="skeleton h-48 w-full rounded-xl" />
-            <div className="mt-3 space-y-2">
-              <div className="skeleton h-4 w-4/5" />
-              <div className="skeleton h-4 w-1/2" />
-              <div className="skeleton h-9 w-full rounded-xl" />
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
+import { LoadingWishlist } from '../components/LoadingWishlist';
+import { useWishlistAddToCart } from '../hooks/useWishlistAddToCart';
+import { useWishlistProducts } from '../hooks/useWishlistProducts';
+import { wishlistProductsKey } from '../queryKeys';
+import { formatCurrency } from '../utils/formatCurrency';
 
 // Combines wishlist state with cart actions and user-facing status feedback.
 function Wishlist() {
@@ -55,29 +26,21 @@ function Wishlist() {
   const [pendingCartId, setPendingCartId] = useState<string | null>(null);
 
   // Server-backed wishlist snapshot for the authenticated user.
-  const wishlistQuery = useQuery({
-    queryKey: ['wishlist-products'],
-    queryFn: async () => {
-      const response = await api.get<Product[]>('/me/wishlist');
-      return response.data;
-    },
-  });
+  const wishlistQuery = useWishlistProducts();
 
   const products = useMemo(() => wishlistQuery.data ?? [], [wishlistQuery.data]);
 
   // Quick cart add flow from wishlist cards.
-  const addToCartMutation = useMutation({
-    mutationFn: async (productId: string) => api.post('/cart/items', { productId, quantity: 1 }),
+  const addToCartMutation = useWishlistAddToCart({
     onMutate: (productId) => {
       setStatusMessage('');
       setPendingCartId(productId);
     },
-    onSuccess: async (_response, productId) => {
+    onSuccess: (productId) => {
       const product = products.find((item) => item.id === productId);
       showCartAddedToast(product?.title ?? 'Product');
       setStatusTone('success');
       setStatusMessage(`${product?.title ?? 'Item'} added to cart.`);
-      await queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
     onError: (error) => {
       setStatusTone('error');
@@ -99,7 +62,7 @@ function Wishlist() {
       setStatusMessage(
         result.added ? `${product.title} added to wishlist.` : `${product.title} removed from wishlist.`
       );
-      await queryClient.invalidateQueries({ queryKey: ['wishlist-products'] });
+      await queryClient.invalidateQueries({ queryKey: wishlistProductsKey });
     } catch (error) {
       setStatusTone('error');
       setStatusMessage(getApiErrorMessage(error, 'Unable to update wishlist'));

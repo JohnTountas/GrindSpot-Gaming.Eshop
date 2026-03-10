@@ -2,11 +2,10 @@
  * Premium gaming storefront homepage.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import api from '@/lib/api/client';
-import { Category, Product } from '@/types';
+import { Product } from '@/types';
 import { getApiErrorMessage } from '@/lib/api/error';
+import { addGuestCartItem } from '@/lib/cart/guestCart';
 import { isAuthenticated } from '@/lib/auth/session';
 import { showCartAddedToast, showCompareAddedToast, showWishlistAddedToast } from '@/lib/ui/toast';
 import { BRAND_NAME, BRAND_TAGLINE } from '@/lib/brand/identity';
@@ -18,47 +17,20 @@ import {
   useCompare,
   useWishlist,
 } from '@/lib/gaming/storefront';
-
-interface ProductsResponse {
-  products: Product[];
-}
-
-type CategoryWithCount = Category & { _count?: { products: number } };
-type SortOption = 'featured' | 'rating' | 'price-asc' | 'price-desc' | 'newest';
+import { SHOWCASE_CATEGORIES, SORT_OPTIONS } from '../constants';
+import { useCategories } from '../hooks/useCategories';
+import { useProductsCatalog } from '../hooks/useProductsCatalog';
+import { useQuickAddToCart } from '../hooks/useQuickAddToCart';
+import type { CategoryWithCount, SortOption } from '../types';
+import { formatCurrency } from '../utils/formatCurrency';
 
 const EMPTY_PRODUCTS: Product[] = [];
 const EMPTY_CATEGORIES: CategoryWithCount[] = [];
-
-const SORT_OPTIONS: Array<{ label: string; value: SortOption }> = [
-  { label: 'Featured', value: 'featured' },
-  { label: 'Best rating', value: 'rating' },
-  { label: 'Price low to high', value: 'price-asc' },
-  { label: 'Price high to low', value: 'price-desc' },
-  { label: 'Newest', value: 'newest' },
-];
-
-const SHOWCASE_CATEGORIES = [
-  {
-    name: 'Gaming Desktop PC',
-    detail: 'High-performance gaming towers',
-    slang: 'Gaming-desktop-pcs',
-  },
-  { name: 'Keyboards', detail: 'Mechanical and hall-effect input', slang: 'Keyboards' },
-  { name: 'Mouse', detail: 'Competitive precision tracking', slang: 'Mouse' },
-  { name: 'Headsets', detail: 'Positional audio and team comms', slang: 'Headsets' },
-  { name: 'Monitors', detail: 'High-refresh displays for esports', slang: 'Monitors' },
-] as const;
-
-// Formats numeric values into EUR currency output for consistent UI pricing.
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR' }).format(value);
-}
 
 // Drives catalog search, filtering, sorting, compare, and quick-add shopping actions.
 function Home() {
   const navigate = useNavigate();
   const location = useLocation();
-  const queryClient = useQueryClient();
   const wishlist = useWishlist();
   const compare = useCompare();
 
@@ -75,17 +47,8 @@ function Home() {
   const [status, setStatus] = useState('');
 
   // Base catalog query used by cards, filters, trending, and compare tables.
-  const productsQuery = useQuery({
-    queryKey: ['products', 'premium-catalog'],
-    queryFn: async () =>
-      (await api.get<ProductsResponse>('/products', { params: { limit: 200 } })).data,
-  });
-
-  // Category metadata powers dropdown filters and catalog counters.
-  const categoriesQuery = useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => (await api.get<CategoryWithCount[]>('/categories')).data,
-  });
+  const productsQuery = useProductsCatalog();
+  const categoriesQuery = useCategories();
 
   const products = productsQuery.data?.products ?? EMPTY_PRODUCTS;
   const categories = categoriesQuery.data ?? EMPTY_CATEGORIES;
@@ -262,26 +225,37 @@ function Home() {
   }, [compareProducts, reviewById]);
 
   // "Quick add" mutation powers one-click cart actions from product cards.
-  const quickAdd = useMutation({
-    mutationFn: async (productId: string) => api.post('/cart/items', { productId, quantity: 1 }),
+  const quickAdd = useQuickAddToCart({
     onMutate: (productId) => {
       setStatus('');
       setPendingId(productId);
     },
-    onSuccess: async (_response, productId) => {
+    onSuccess: (productId) => {
       const product = products.find((item) => item.id === productId);
       showCartAddedToast(product?.title ?? 'Product');
       setStatus(`${product?.title ?? 'Item'} added to cart.`);
-      await queryClient.invalidateQueries({ queryKey: ['cart'] });
-      await queryClient.invalidateQueries({ queryKey: ['storefront-state'] });
     },
-    onError: (error) => setStatus(getApiErrorMessage(error, 'Unable to add item to cart')),
+    onError: (message) => setStatus(message),
     onSettled: () => setPendingId(null),
   });
 
-  // Enforces authentication then queues a quick-add cart mutation.
+  // Adds to the server cart for members or to local guest storage for visitors.
   function addToCart(product: Product) {
-    if (!isAuthenticated()) return navigate('/login');
+    if (!isAuthenticated()) {
+      try {
+        setStatus('');
+        setPendingId(product.id);
+        addGuestCartItem(product, 1);
+        showCartAddedToast(product.title);
+        setStatus(`${product.title} added to cart.`);
+      } catch (error) {
+        setStatus(getApiErrorMessage(error, 'Unable to add item to cart'));
+      } finally {
+        setPendingId(null);
+      }
+      return;
+    }
+
     quickAdd.mutate(product.id);
   }
 

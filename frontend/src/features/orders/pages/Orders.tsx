@@ -2,74 +2,18 @@
  * Order history page listing customer purchases and statuses.
  */
 import { CSSProperties, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import api from '@/lib/api/client';
-import { Order } from '@/types';
 import { getApiErrorMessage } from '@/lib/api/error';
-
-const statusStyles: Record<Order['status'], string> = {
-  PENDING: 'border-amber-200 bg-amber-50 text-amber-700',
-  PAID: 'border-sky-200 bg-sky-50 text-sky-700',
-  SHIPPED: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-  CANCELLED: 'border-red-200 bg-red-50 text-red-700',
-};
-
-// Formats numeric values into EUR currency output for consistent UI pricing.
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-// Formats ISO timestamps into locale-friendly date/time labels.
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat('en-US', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(value));
-}
-
-// Renders skeleton order cards to preserve layout during data loading.
-function LoadingOrders() {
-  return (
-    <section aria-label="Loading orders" className="space-y-5">
-      <div className="surface-card p-5">
-        <div className="skeleton h-8 w-44" />
-      </div>
-      <div className="space-y-4">
-        {Array.from({ length: 4 }).map((_, index) => (
-          <div key={index} className="surface-card p-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="space-y-2">
-                <div className="skeleton h-4 w-40" />
-                <div className="skeleton h-4 w-52" />
-              </div>
-              <div className="space-y-2">
-                <div className="skeleton h-6 w-24 rounded-full" />
-                <div className="skeleton h-4 w-20" />
-              </div>
-            </div>
-            <div className="mt-4 skeleton h-10 w-36 rounded-xl" />
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
+import { LoadingOrders } from '../components/LoadingOrders';
+import { ORDER_STATUS_STYLES } from '../constants';
+import { useOrders } from '../hooks/useOrders';
+import { formatCurrency } from '../utils/formatCurrency';
+import { formatDate } from '../utils/formatDate';
 
 // Shows order history, computed KPIs, and quick actions for each order.
 function Orders() {
   // Pull authenticated user's order history.
-  const ordersQuery = useQuery({
-    queryKey: ['orders'],
-    queryFn: async () => {
-      const response = await api.get<Order[]>('/orders');
-      return response.data;
-    },
-  });
+  const ordersQuery = useOrders();
 
   // Derive dashboard stats once per query result.
   const orders = useMemo(() => ordersQuery.data ?? [], [ordersQuery.data]);
@@ -189,7 +133,7 @@ function Orders() {
 
                   <div className="text-right">
                     <p
-                      className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ${statusStyles[order.status]}`}
+                      className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ${ORDER_STATUS_STYLES[order.status]}`}
                     >
                       {order.status}
                     </p>

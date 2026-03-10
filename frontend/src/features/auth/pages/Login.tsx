@@ -3,57 +3,38 @@
  */
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "@/lib/api/client";
-import { AuthResponse } from "@/types";
-import { getApiErrorMessage } from "@/lib/api/error";
 import { BRAND_NAME, BRAND_TAGLINE } from "@/lib/brand/identity";
 import { showSuccessMessage } from "@/lib/ui/toast";
-
-// Derives a friendly display name for login success feedback.
-function getLoginUsername(user: AuthResponse["user"]): string {
-  const fullName = [user.firstName, user.lastName]
-    .filter((value): value is string => Boolean(value?.trim()))
-    .join(" ")
-    .trim();
-
-  if (fullName) {
-    return fullName;
-  }
-
-  const emailPrefix = user.email.split("@")[0]?.trim();
-  return emailPrefix || user.email;
-}
+import { useLogin } from "../hooks/useLogin";
+import { getUserDisplayName } from "../utils/getUserDisplayName";
+import { persistSession } from "../utils/persistSession";
 
 // Handles authentication form state, login API calls, and post-login navigation.
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const loginMutation = useLogin({
+    onSuccess: (response) => {
+      persistSession(response);
+      showSuccessMessage({
+        title: "Login successful",
+        message: `Welcome back, ${getUserDisplayName(response.user)}!`,
+        tone: "success",
+      });
+      navigate("/");
+    },
+    onError: (message) => {
+      setErrorMessage(message);
+    },
+  });
 
   // Submits login credentials, persists session tokens, and routes on success.
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmitting(true);
     setErrorMessage("");
-
-    try {
-      const response = await api.post<AuthResponse>("/auth/login", { email, password });
-      // Persist the short-lived access token and lightweight user profile for route guards.
-      localStorage.setItem("accessToken", response.data.accessToken);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
-      showSuccessMessage({
-        title: "Login successful",
-        message: `Welcome back, ${getLoginUsername(response.data.user)}!`,
-        tone: "success",
-      });
-      navigate("/");
-    } catch (error) {
-      setErrorMessage(getApiErrorMessage(error, "Login failed"));
-    } finally {
-      setSubmitting(false);
-    }
+    loginMutation.mutate({ email, password });
   }
 
   return (
@@ -128,10 +109,10 @@ function Login() {
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={loginMutation.isPending}
             className="inline-flex w-full items-center justify-center rounded-xl bg-primary-800 px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-neon hover:bg-primary-500 disabled:opacity-60"
           >
-            {submitting ? "Signing in..." : "Sign in"}
+            {loginMutation.isPending ? "Signing in..." : "Sign in"}
           </button>
         </form>
 

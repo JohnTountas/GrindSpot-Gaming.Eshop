@@ -81,6 +81,67 @@ grindspot/
 |- frontend/
 |  |- public/
 |  |- src/
+|  |  |- components/
+|  |  |- features/
+|  |  |  |- admin/
+|  |  |  |  |- api/
+|  |  |  |  |- components/
+|  |  |  |  |- hooks/
+|  |  |  |  |- pages/
+|  |  |  |  |- utils/
+|  |  |  |  |- constants.ts
+|  |  |  |  |- queryKeys.ts
+|  |  |  |  |- types.ts
+|  |  |  |- auth/
+|  |  |  |  |- api/
+|  |  |  |  |- hooks/
+|  |  |  |  |- pages/
+|  |  |  |  |- utils/
+|  |  |  |- cart/
+|  |  |  |  |- api/
+|  |  |  |  |- components/
+|  |  |  |  |- hooks/
+|  |  |  |  |- pages/
+|  |  |  |  |- utils/
+|  |  |  |  |- queryKeys.ts
+|  |  |  |- checkout/
+|  |  |  |  |- api/
+|  |  |  |  |- components/
+|  |  |  |  |- hooks/
+|  |  |  |  |- pages/
+|  |  |  |  |- utils/
+|  |  |  |  |- constants.ts
+|  |  |  |  |- types.ts
+|  |  |  |- orders/
+|  |  |  |  |- api/
+|  |  |  |  |- components/
+|  |  |  |  |- hooks/
+|  |  |  |  |- pages/
+|  |  |  |  |- utils/
+|  |  |  |  |- constants.ts
+|  |  |  |  |- queryKeys.ts
+|  |  |  |- products/
+|  |  |  |  |- api/
+|  |  |  |  |- components/
+|  |  |  |  |- hooks/
+|  |  |  |  |- pages/
+|  |  |  |  |- utils/
+|  |  |  |  |- constants.ts
+|  |  |  |  |- queryKeys.ts
+|  |  |  |  |- types.ts
+|  |  |  |- wishlist/
+|  |  |  |  |- api/
+|  |  |  |  |- components/
+|  |  |  |  |- hooks/
+|  |  |  |  |- pages/
+|  |  |  |  |- utils/
+|  |  |  |  |- queryKeys.ts
+|  |  |- lib/
+|  |  |- types/
+|  |  |- App.tsx
+|  |  |- index.css
+|  |  |- main.tsx
+|  |  |- vite-env.d.ts
 |- .github/workflows/
 |- docker-compose.yml
 |- Dockerfile
@@ -99,7 +160,7 @@ grindspot/
 
 - [frontend/src/main.tsx](frontend/src/main.tsx) mounts the React application.
 - [frontend/src/App.tsx](frontend/src/App.tsx) defines routing and shared providers.
-- Feature pages live under `frontend/src/features/*`.
+- Feature pages live under `frontend/src/features/*`, organized by `api/`, `hooks/`, `components/`, `utils/`, and `pages/` with feature-local `constants.ts`, `queryKeys.ts`, and `types.ts` where needed.
 - Shared API/session/storefront helpers live under `frontend/src/lib/*`.
 
 ### Production shape

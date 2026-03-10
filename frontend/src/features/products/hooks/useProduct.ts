@@ -1,0 +1,14 @@
+/**
+ * Query hook for a single product.
+ */
+import { useQuery } from '@tanstack/react-query';
+import { getProduct } from '../api/products';
+import { productKey } from '../queryKeys';
+
+export function useProduct(productId: string | undefined) {
+  return useQuery({
+    queryKey: productKey(productId),
+    queryFn: () => getProduct(productId as string),
+    enabled: Boolean(productId),
+  });
+}

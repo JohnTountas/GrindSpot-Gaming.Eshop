@@ -2,7 +2,7 @@
 # The backend serves the built frontend from the same origin so auth cookies,
 # API traffic, and SPA routing stay aligned behind one Fly hostname.
 app = "grindspot-fly-app"
-primary_region = "iad"
+primary_region = "fra"
 
 [build]
   # Build from the repo-root Dockerfile that compiles both apps together.

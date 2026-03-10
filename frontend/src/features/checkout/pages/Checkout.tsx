@@ -2,202 +2,29 @@
  * Checkout page that captures shipping details and submits orders.
  */
 import { FormEvent, MouseEvent, useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '@/lib/api/client';
-import { Cart, ShippingAddress } from '@/types';
+import { ShippingAddress } from '@/types';
 import { getApiErrorMessage } from '@/lib/api/error';
 import { showSuccessMessage } from '@/lib/ui/toast';
-
-type PaymentMethod = 'CARD' | 'PAYPAL' | 'APPLE_PAY' | 'GOOGLE_PAY' | 'BANK_TRANSFER';
-
-interface PaymentOption {
-  id: PaymentMethod;
-  label: string;
-  description: string;
-  complianceNote: string;
-}
-
-interface CardPaymentDetails {
-  holderName: string;
-  number: string;
-  expiry: string;
-  cvv: string;
-}
-
-const PAYMENT_OPTIONS: PaymentOption[] = [
-  {
-    id: 'CARD',
-    label: 'Credit or debit card',
-    description: 'Visa, Mastercard, and major cards with 3D Secure support.',
-    complianceNote: 'PCI-ready tokenized processing',
-  },
-  {
-    id: 'PAYPAL',
-    label: 'PayPal',
-    description: 'Fast checkout with PayPal account authentication.',
-    complianceNote: 'SCA-compliant wallet redirect',
-  },
-  {
-    id: 'APPLE_PAY',
-    label: 'Apple Pay',
-    description: 'Biometric wallet payment on supported Apple devices.',
-    complianceNote: 'Device-level cryptographic approval',
-  },
-  {
-    id: 'GOOGLE_PAY',
-    label: 'Google Pay',
-    description: 'Secure wallet authorization on supported browsers and Android.',
-    complianceNote: 'Tokenized wallet transaction',
-  },
-  {
-    id: 'BANK_TRANSFER',
-    label: 'Bank transfer',
-    description: 'Place the order now and settle by verified bank transfer reference.',
-    complianceNote: 'Regulated remittance reference controls',
-  },
-];
-
-const FOOTER_MESSAGE_EVENT = 'grindspot:open-footer-message';
-
-// Formats numeric values into EUR currency output for consistent UI pricing.
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-// Strips non-digit characters to keep payment field parsing deterministic.
-function digitsOnly(value: string) {
-  return value.replace(/\D/g, '');
-}
-
-// Applies grouped card-number formatting while preserving only numeric input.
-function formatCardNumber(value: string) {
-  const sanitized = digitsOnly(value).slice(0, 19);
-  return sanitized.match(/.{1,4}/g)?.join(' ') ?? '';
-}
-
-// Normalizes card expiry values into MM/YY presentation format.
-function formatCardExpiry(value: string) {
-  const sanitized = digitsOnly(value).slice(0, 4);
-  if (sanitized.length <= 2) {
-    return sanitized;
-  }
-  return `${sanitized.slice(0, 2)}/${sanitized.slice(2)}`;
-}
-
-// Extracts the final four digits for secure payment previews.
-function getCardLastFour(value: string) {
-  const sanitized = digitsOnly(value);
-  return sanitized.length >= 4 ? sanitized.slice(-4) : '';
-}
-
-// Performs Luhn checksum validation before card authorization.
-function isValidCardNumber(value: string) {
-  const sanitized = digitsOnly(value);
-  if (sanitized.length < 12 || sanitized.length > 19) {
-    return false;
-  }
-
-  let sum = 0;
-  let shouldDouble = false;
-
-  for (let index = sanitized.length - 1; index >= 0; index -= 1) {
-    let digit = Number(sanitized[index]);
-    if (shouldDouble) {
-      digit *= 2;
-      if (digit > 9) {
-        digit -= 9;
-      }
-    }
-    sum += digit;
-    shouldDouble = !shouldDouble;
-  }
-
-  return sum % 10 === 0;
-}
-
-// Validates card expiry structure and ensures the card is not expired.
-function isValidExpiry(value: string) {
-  const match = /^(\d{2})\/(\d{2})$/.exec(value);
-  if (!match) {
-    return false;
-  }
-
-  const month = Number(match[1]);
-  const year = Number(match[2]) + 2000;
-  if (month < 1 || month > 12) {
-    return false;
-  }
-
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth() + 1;
-
-  if (year < currentYear) {
-    return false;
-  }
-
-  if (year === currentYear && month < currentMonth) {
-    return false;
-  }
-
-  return true;
-}
-
-// Performs lightweight email validation for wallet-based payment methods.
-function isValidEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
-}
-
-// Builds a deterministic simulated payment-intent reference for the order payload.
-function buildPaymentIntentId(method: PaymentMethod, fingerprintSource: string) {
-  const fingerprint =
-    fingerprintSource
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, '')
-      .slice(-8) || 'anon';
-  const timestamp = Date.now().toString(36);
-  return `sim_${method.toLowerCase()}_${fingerprint}_${timestamp}`;
-}
-
-// Renders checkout skeletons to keep perceived performance stable during initial fetches.
-function CheckoutLoading() {
-  return (
-    <section aria-label="Loading checkout" className="space-y-5">
-      <div className="surface-card p-5">
-        <div className="skeleton h-8 w-52" />
-        <div className="mt-2 skeleton h-4 w-80 max-w-full" />
-      </div>
-      <div className="grid items-start gap-5 lg:grid-cols-12">
-        <div className="surface-card space-y-4 p-6 lg:col-span-8">
-          {Array.from({ length: 7 }).map((_, index) => (
-            <div key={index} className="space-y-2">
-              <div className="skeleton h-4 w-32" />
-              <div className="skeleton h-10 w-full rounded-xl" />
-            </div>
-          ))}
-          <div className="skeleton h-11 w-full rounded-xl" />
-        </div>
-        <div className="surface-card p-6 lg:col-span-4">
-          <div className="space-y-3">
-            <div className="skeleton h-5 w-1/2" />
-            <div className="skeleton h-4 w-3/4" />
-            <div className="skeleton h-4 w-2/3" />
-            <div className="skeleton h-10 w-full rounded-xl" />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
+import { CheckoutLoading } from '../components/CheckoutLoading';
+import { FOOTER_MESSAGE_EVENT, PAYMENT_OPTIONS } from '../constants';
+import { useCreateOrder } from '../hooks/useCreateOrder';
+import type { CardPaymentDetails, PaymentMethod } from '../types';
+import { buildPaymentIntentId } from '../utils/buildPaymentIntentId';
+import {
+  digitsOnly,
+  formatCardExpiry,
+  formatCardNumber,
+  formatCurrency,
+  getCardLastFour,
+} from '../utils/formatters';
+import { isValidCardNumber, isValidEmail, isValidExpiry } from '../utils/validators';
+import { useCartData } from '@/features/cart/hooks/useCartData';
 
 // Manages checkout state, payment validation, and final order creation workflow.
 function Checkout() {
   const navigate = useNavigate();
+  const { authed, cart, isLoading, isError, error, refetch } = useCartData();
 
   // Shipping, payment, and compliance acknowledgement state.
   const [form, setForm] = useState<ShippingAddress>({
@@ -227,22 +54,9 @@ function Checkout() {
   const selectedPaymentOption =
     PAYMENT_OPTIONS.find((option) => option.id === selectedPaymentMethod) ?? PAYMENT_OPTIONS[0];
 
-  // Load current cart snapshot that backs checkout totals and order payloads.
-  const cartQuery = useQuery({
-    queryKey: ['cart'],
-    queryFn: async () => {
-      const response = await api.get<Cart>('/cart');
-      return response.data;
-    },
-  });
-
   // Submits final order with shipping details and a simulated payment-intent reference.
-  const createOrderMutation = useMutation({
-    mutationFn: async (paymentIntentId: string) => {
-      const response = await api.post('/orders', { shippingAddress: form, paymentIntentId });
-      return response.data as { id: string };
-    },
-    onSuccess: (order) => {
+  const createOrderMutation = useCreateOrder({
+    onSuccess: (orderId) => {
       showSuccessMessage({
         title: 'Order placed successfully',
         message: (
@@ -256,10 +70,10 @@ function Checkout() {
         placement: 'center',
         durationMs: 8000,
       });
-      navigate(`/orders/${order.id}`);
+      navigate(`/orders/${orderId}`);
     },
-    onError: (error) => {
-      setErrorMessage(getApiErrorMessage(error, 'Failed to create order'));
+    onError: (message) => {
+      setErrorMessage(message);
     },
   });
 
@@ -312,6 +126,11 @@ function Checkout() {
     event.preventDefault();
     setErrorMessage('');
 
+    if (!authed) {
+      setErrorMessage('Sign in or create an account to place your order.');
+      return;
+    }
+
     const paymentValidationError = validatePaymentStep();
     if (paymentValidationError) {
       setErrorMessage(paymentValidationError);
@@ -327,7 +146,7 @@ function Checkout() {
 
     const paymentIntentId = buildPaymentIntentId(selectedPaymentMethod, fingerprintSource);
     setCardDetails((current) => ({ ...current, cvv: '' }));
-    createOrderMutation.mutate(paymentIntentId);
+    createOrderMutation.mutate({ shippingAddress: form, paymentIntentId });
   }
 
   // Updates a shipping field and clears stale validation errors.
@@ -348,20 +167,20 @@ function Checkout() {
     setCardDetails((current) => ({ ...current, [key]: value }));
   }
 
-  if (cartQuery.isLoading) {
+  if (authed && isLoading) {
     return <CheckoutLoading />;
   }
 
-  if (cartQuery.isError) {
+  if (authed && isError) {
     return (
       <div role="alert" className="surface-card border-red-200 bg-red-50 p-5 text-red-800">
         <p className="font-semibold">Unable to prepare checkout</p>
         <p className="mt-1 text-sm">
-          {getApiErrorMessage(cartQuery.error, 'Failed to load cart for checkout')}
+          {getApiErrorMessage(error, 'Failed to load cart for checkout')}
         </p>
         <button
           type="button"
-          onClick={() => cartQuery.refetch()}
+          onClick={() => refetch()}
           className="mt-4 rounded-full border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100"
         >
           Retry
@@ -370,7 +189,6 @@ function Checkout() {
     );
   }
 
-  const cart = cartQuery.data;
   const items = cart?.items ?? [];
 
   if (items.length === 0) {

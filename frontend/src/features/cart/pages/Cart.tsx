@@ -2,62 +2,18 @@
  * Shopping cart page for quantity edits, item removal, and totals.
  */
 import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import api from '@/lib/api/client';
-import { Cart as CartType, CartItem } from '@/types';
+import { CartItem } from '@/types';
 import { getApiErrorMessage } from '@/lib/api/error';
-import { isAuthenticated } from '@/lib/auth/session';
-
-// Formats numeric values into EUR currency output for consistent UI pricing.
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-// Displays cart skeleton placeholders while asynchronous cart data is loading.
-function LoadingCart() {
-  return (
-    <section aria-label="Loading cart" className="space-y-5">
-      <div className="surface-card p-5">
-        <div className="skeleton h-8 w-40" />
-      </div>
-      <div className="grid items-start gap-5 lg:grid-cols-12">
-        <div className="space-y-4 lg:col-span-8">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="surface-card p-5">
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="skeleton h-16 w-16 rounded-xl" />
-                <div className="min-w-[180px] flex-1 space-y-2">
-                  <div className="skeleton h-4 w-2/3" />
-                  <div className="skeleton h-4 w-1/3" />
-                </div>
-                <div className="skeleton h-9 w-36 rounded-xl" />
-                <div className="skeleton h-6 w-20" />
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="surface-card p-5 lg:col-span-4">
-          <div className="space-y-3">
-            <div className="skeleton h-4 w-1/2" />
-            <div className="skeleton h-4 w-2/3" />
-            <div className="skeleton h-8 w-1/3" />
-            <div className="skeleton h-10 w-full rounded-xl" />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
+import { LoadingCart } from '../components/LoadingCart';
+import { useCartData } from '../hooks/useCartData';
+import { useRemoveCartItem } from '../hooks/useRemoveCartItem';
+import { useUpdateCartItem } from '../hooks/useUpdateCartItem';
+import { formatCurrency } from '../utils/formatCurrency';
 
 // Coordinates cart data fetching, quantity mutations, removal actions, and order summary totals.
 function Cart() {
-  const queryClient = useQueryClient();
-  const authed = isAuthenticated();
+  const { authed, cart, isLoading, isError, error, refetch } = useCartData();
 
   // UI feedback for asynchronous cart actions.
   const [statusMessage, setStatusMessage] = useState('');
@@ -65,54 +21,38 @@ function Cart() {
   const [pendingUpdateItemId, setPendingUpdateItemId] = useState<string | null>(null);
   const [pendingRemoveItemId, setPendingRemoveItemId] = useState<string | null>(null);
 
-  // Protected cart query (disabled until the user is authenticated).
-  const cartQuery = useQuery({
-    queryKey: ['cart'],
-    queryFn: async () => {
-      const response = await api.get<CartType>('/cart');
-      return response.data;
-    },
-    enabled: authed,
-  });
-
-  // Quantity mutation for +/- controls on each cart line.
-  const updateItemMutation = useMutation({
-    mutationFn: async (payload: { itemId: string; quantity: number }) => {
-      return api.patch(`/cart/items/${payload.itemId}`, { quantity: payload.quantity });
-    },
-    onMutate: (payload) => {
+  const updateItemMutation = useUpdateCartItem({
+    authed,
+    onMutate: (itemId) => {
       setStatusMessage('');
-      setPendingUpdateItemId(payload.itemId);
+      setPendingUpdateItemId(itemId);
     },
-    onSuccess: async () => {
+    onSuccess: () => {
       setStatusTone('success');
       setStatusMessage('Cart updated');
-      await queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
-    onError: (error) => {
+    onError: (message) => {
       setStatusTone('error');
-      setStatusMessage(getApiErrorMessage(error, 'Unable to update cart item'));
+      setStatusMessage(message);
     },
     onSettled: () => {
       setPendingUpdateItemId(null);
     },
   });
 
-  // Remove mutation for deleting a single cart line.
-  const removeItemMutation = useMutation({
-    mutationFn: async (itemId: string) => api.delete(`/cart/items/${itemId}`),
+  const removeItemMutation = useRemoveCartItem({
+    authed,
     onMutate: (itemId) => {
       setStatusMessage('');
       setPendingRemoveItemId(itemId);
     },
-    onSuccess: async () => {
+    onSuccess: () => {
       setStatusTone('success');
       setStatusMessage('Item removed from cart');
-      await queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
-    onError: (error) => {
+    onError: (message) => {
       setStatusTone('error');
-      setStatusMessage(getApiErrorMessage(error, 'Unable to remove cart item'));
+      setStatusMessage(message);
     },
     onSettled: () => {
       setPendingRemoveItemId(null);
@@ -124,43 +64,18 @@ function Cart() {
     return Number(item.product.price) * item.quantity;
   }
 
-  if (!authed) {
-    return (
-      <section className="surface-card p-8 text-center">
-        <h1 className="text-2xl font-semibold text-primary-900">Your cart is protected</h1>
-        <p className="mt-2 text-sm text-primary-600">
-          Log in to view saved items, update quantities, and continue to secure checkout.
-        </p>
-        <div className="mt-5 flex flex-wrap justify-center gap-2">
-          <Link
-            to="/login"
-            className="rounded-full bg-primary-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-900"
-          >
-            Go to login
-          </Link>
-          <Link
-            to="/"
-            className="rounded-full border border-primary-200 bg-white px-5 py-2.5 text-sm font-semibold text-primary-800 hover:border-primary-400 hover:text-primary-900"
-          >
-            Continue shopping
-          </Link>
-        </div>
-      </section>
-    );
-  }
-
-  if (cartQuery.isLoading) {
+  if (authed && isLoading) {
     return <LoadingCart />;
   }
 
-  if (cartQuery.isError) {
+  if (authed && isError) {
     return (
       <div role="alert" className="surface-card border-red-200 bg-red-50 p-5 text-red-800">
         <p className="font-semibold">Unable to load your cart</p>
-        <p className="mt-1 text-sm">{getApiErrorMessage(cartQuery.error, 'Failed to load cart')}</p>
+        <p className="mt-1 text-sm">{getApiErrorMessage(error, 'Failed to load cart')}</p>
         <button
           type="button"
-          onClick={() => cartQuery.refetch()}
+          onClick={() => refetch()}
           className="mt-4 rounded-full border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100"
         >
           Retry
@@ -169,7 +84,6 @@ function Cart() {
     );
   }
 
-  const cart = cartQuery.data;
   const items = cart?.items ?? [];
 
   // Derived totals used by summary cards and checkout CTA context.
@@ -204,6 +118,12 @@ function Cart() {
           }`}
         >
           {statusMessage}
+        </p>
+      )}
+
+      {!authed && (
+        <p className="surface-card border border-accent-700/45 bg-accent-700/8 px-4 py-3 text-sm font-semibold text-primary-900">
+          Guest cart mode is active. You can check out now or sign in to save items to your account.
         </p>
       )}
 

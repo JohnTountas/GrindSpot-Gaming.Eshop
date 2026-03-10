@@ -2,7 +2,9 @@
  * Shared application shell (header, navigation, and premium conversion footer).
  */
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { guestCartHasItems, syncGuestCartToServer } from "@/lib/cart/guestCart";
 import { clearSession, getStoredUser, isAuthenticated } from "@/lib/auth/session";
 import { useWishlist } from "@/lib/gaming/storefront";
 import ToastHost from "@/components/feedback/ToastHost";
@@ -34,7 +36,7 @@ const FOOTER_MESSAGES = {
   contactSupport: {
     section: "Support",
     title: "Contact Support",
-    body: "For inquiries regarding these Terms: •Email: support@grindspot.com, • Address: www.grindspot.com, • Phone: 6977664135",
+    body: "For inquiries regarding these Terms: • Email: giannis93.tds@gmail.com • Address: www.grindspot.com • Phone: +306977664135",
   },
   warrantyClaims: {
     section: "Support",
@@ -73,6 +75,7 @@ function isFooterMessageKey(value: unknown): value is FooterMessageKey {
 // Builds the shared shell (header, navigation, outlet, footer, and modal messaging).
 function Layout() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const authed = isAuthenticated();
   const user = getStoredUser();
   const currentYear = new Date().getFullYear();
@@ -126,6 +129,37 @@ function Layout() {
       window.removeEventListener(FOOTER_MESSAGE_EVENT, handleOpenFooterMessage);
     };
   }, []);
+
+  useEffect(() => {
+    if (!authed || !guestCartHasItems()) {
+      return;
+    }
+
+    let cancelled = false;
+
+    // Moves any guest cart lines into the authenticated server cart after sign-in.
+    void (async () => {
+      const { syncedCount } = await syncGuestCartToServer();
+
+      if (cancelled || syncedCount === 0) {
+        return;
+      }
+
+      await queryClient.invalidateQueries({ queryKey: ["cart"] });
+      showSuccessMessage({
+        title: "Cart synced",
+        message: "Your guest cart is now available in your account.",
+        tone: "success",
+        durationMs: 3500,
+        actionLabel: "View cart",
+        actionTo: "/cart",
+      });
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [authed, queryClient]);
 
   useEffect(() => {
     if (!activeFooterMessage) {
@@ -197,12 +231,12 @@ function Layout() {
         <div className="absolute bottom-[-10rem] left-1/3 h-80 w-80 animate-float-slow rounded-full bg-accent-700/16 blur-3xl [animation-delay:2.1s]" />
       </div>
       <header
-        className={`sticky top-0 z-30 border-b border-primary-300/55 bg-primary-50/88 backdrop-blur-xl transition-transform duration-300 ${
+        className={`sticky top-0 z-40  border-primary-300/55 bg-primary-50/88 transition-transform duration-300 ${
           isHeaderVisible ? "translate-y-0" : "-translate-y-full"
         }`}
       >
         <div className="container py-4">
-          <div className="surface-card border-primary-300/60 bg-primary-100/72 px-4 py-4 shadow-raised sm:px-6 sm:py-5">
+          <div className="surface-card border-primary-300/60 backdrop-blur-2xl bg-primary-100/72 px-4 py-4 shadow-raised sm:px-8 sm:py-6">
             <div className="flex flex-wrap items-center gap-3">
               <NavLink
                 to="/"
@@ -402,7 +436,7 @@ function Layout() {
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-primary-300/50 pt-4 text-xs font-semibold uppercase tracking-[0.16em] text-primary-600">
             <p>PCI secured checkout</p>
-            <p>Visa | Mastercard | PayPal | Apple Pay | Google Pay</p>
+            <p>Visa • Mastercard • PayPal • Apple Pay • Google Pay</p>
             <p>Free returns in 30 days</p>
           </div>
 

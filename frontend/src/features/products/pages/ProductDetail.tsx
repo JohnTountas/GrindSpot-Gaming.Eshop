@@ -3,11 +3,9 @@
  */
 import { useMemo, useState } from "react";
 import type { MouseEvent } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import api from "@/lib/api/client";
-import { Product } from "@/types";
 import { getApiErrorMessage } from "@/lib/api/error";
+import { addGuestCartItem } from "@/lib/cart/guestCart";
 import { isAuthenticated } from "@/lib/auth/session";
 import { showCartAddedToast, showCompareAddedToast, showWishlistAddedToast } from "@/lib/ui/toast";
 import {
@@ -18,23 +16,18 @@ import {
   useCompare,
   useWishlist,
 } from "@/lib/gaming/storefront";
-
-interface ProductsResponse {
-  products: Product[];
-}
-
-// Formats numeric values into EUR currency output for consistent UI pricing.
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR" }).format(value);
-}
+import { useProduct } from "../hooks/useProduct";
+import { useRelatedProducts } from "../hooks/useRelatedProducts";
+import { useQuickAddToCart } from "../hooks/useQuickAddToCart";
+import { formatCurrency } from "../utils/formatCurrency";
 
 // Loads one product, manages interactive purchase actions, and renders deep product context.
 function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const wishlist = useWishlist();
   const compare = useCompare();
+  const authed = isAuthenticated();
 
   // Local UI feedback + interactive zoom state for the hero image.
   const [status, setStatus] = useState("");
@@ -42,39 +35,16 @@ function ProductDetail() {
   const [loupeOrigin, setLoupeOrigin] = useState({ x: 50, y: 50 });
 
   // Fetch the selected product by route id.
-  const productQuery = useQuery({
-    queryKey: ["product", id],
-    queryFn: async () => (await api.get<Product>(`/products/${id}`)).data,
-    enabled: Boolean(id),
-  });
-
-  // Fetch related products scoped by category once the primary product is ready.
-  const relatedQuery = useQuery({
-    queryKey: ["related-products", id, productQuery.data?.category?.slang],
-    queryFn: async () => {
-      const params = productQuery.data?.category?.slang
-        ? { category: productQuery.data.category.slang, limit: 10 }
-        : { limit: 10 };
-      return (await api.get<ProductsResponse>("/products", { params })).data.products;
-    },
-    enabled: Boolean(id && productQuery.data),
-  });
+  const productQuery = useProduct(id);
+  const relatedQuery = useRelatedProducts(id, productQuery.data?.category?.slang);
 
   // Purchase CTA mutation used by both desktop and mobile action bars.
-  const addToCart = useMutation({
-    mutationFn: async () => {
-      if (!id) {
-        throw new Error("Missing product id");
-      }
-      return api.post("/cart/items", { productId: id, quantity: 1 });
-    },
-    onSuccess: async () => {
+  const addToCart = useQuickAddToCart({
+    onSuccess: () => {
       showCartAddedToast(productQuery.data?.title ?? "Product");
       setStatus(`${productQuery.data?.title ?? "Item"} added to cart.`);
-      await queryClient.invalidateQueries({ queryKey: ["storefront-state"] });
-      await queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
-    onError: (error) => setStatus(getApiErrorMessage(error, "Failed to add item")),
+    onError: (message) => setStatus(message),
   });
 
   const product = productQuery.data;
@@ -221,13 +191,22 @@ function ProductDetail() {
     }
   }
 
-  // Ensures authentication before attempting to add the current product to cart.
+  // Adds the current product to either the member cart or guest cart storage.
   function handleAddToCart() {
-    if (!isAuthenticated()) {
-      navigate("/login");
+    if (!product) {
       return;
     }
-    addToCart.mutate();
+    if (!authed) {
+      try {
+        addGuestCartItem(product, 1);
+        showCartAddedToast(product.title);
+        setStatus(`${product.title} added to cart.`);
+      } catch (error) {
+        setStatus(getApiErrorMessage(error, "Failed to add item"));
+      }
+      return;
+    }
+    addToCart.mutate(product.id);
   }
 
   // Toggles image loupe mode so users can inspect product details closely.
