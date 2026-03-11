@@ -20,6 +20,7 @@ import categoryRoutes from "./modules/categories/category.routes";
 import compareWishlistRoutes from "./modules/compare_wishlist/compare_wishlist.routes";
 import adminCatalogRoutes from "./modules/adminCatalog/adminCatalog.routes";
 
+// Defines application route segments used across middleware and routing.
 const ROUTE_PATHS = {
   apiBase: "/api",
   apiDocs: "/docs",
@@ -27,11 +28,13 @@ const ROUTE_PATHS = {
   uploadsPublicPath: "/uploads",
 } as const;
 
+// Defines filesystem directories used by static serving.
 const DIRECTORY_PATHS = {
   uploadsDirectory: envConfig.upload.uploadDir,
   frontendDistDirectory: process.env.FRONTEND_DIST_PATH || "",
 } as const;
 
+// Describes the normalized configuration used to bootstrap the Express app.
 interface ApplicationSetupConfig {
   allowedCorsOrigin: string;
   runningEnvironment: string;
@@ -257,6 +260,7 @@ function createExpressApplication(setupConfig: ApplicationSetupConfig): Express 
   return expressApplication;
 }
 
+// Builds the configuration and initializes the configured Express app.
 const applicationSetupConfig = buildDefaultSetupConfig();
 const app = createExpressApplication(applicationSetupConfig);
 

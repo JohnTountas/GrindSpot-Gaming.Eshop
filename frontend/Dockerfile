@@ -1,3 +1,4 @@
+# Frontend Dockerfile for building and serving the SPA bundle.
 FROM node:20-alpine AS build
 
 WORKDIR /app

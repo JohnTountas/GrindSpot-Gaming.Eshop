@@ -3,6 +3,7 @@
  */
 import type { Product } from '@/types';
 
+// Props required to render the admin product selector.
 interface ProductSelectorProps {
   productSearch: string;
   onSearchChange: (value: string) => void;
@@ -12,6 +13,7 @@ interface ProductSelectorProps {
   totalProducts: number;
 }
 
+// Renders the product search and selection sidebar for admin workflows.
 export function ProductSelector({
   productSearch,
   onSearchChange,

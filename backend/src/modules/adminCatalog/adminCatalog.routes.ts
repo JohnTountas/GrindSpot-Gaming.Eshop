@@ -16,8 +16,10 @@ import {
   updateSpecificationSchema,
 } from './adminCatalog.dto';
 
+// Express router for admin catalog endpoints.
 const router = Router();
 
+// All admin catalog routes require authentication and admin role.
 router.use(authenticate, authorize('ADMIN'));
 
 router.get('/products', validate(listAdminProductsSchema), adminCatalogController.listProducts);
@@ -48,4 +50,3 @@ router.patch('/reviews/:reviewId', validate(updateReviewSchema), adminCatalogCon
 router.delete('/reviews/:reviewId', validate(deleteReviewSchema), adminCatalogController.deleteReview);
 
 export default router;
-

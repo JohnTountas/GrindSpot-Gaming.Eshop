@@ -6,11 +6,13 @@ import { getApiErrorMessage } from '@/lib/api/error';
 import { createOrder } from '@/features/orders/api/orders';
 import type { CreateOrderData } from '@/types';
 
+// Optional callbacks for create-order mutation behavior.
 interface UseCreateOrderOptions {
   onSuccess?: (orderId: string) => void;
   onError?: (message: string) => void;
 }
 
+// React Query mutation hook to submit a checkout order.
 export function useCreateOrder(options: UseCreateOrderOptions = {}) {
   return useMutation({
     mutationFn: (payload: CreateOrderData) => createOrder(payload),

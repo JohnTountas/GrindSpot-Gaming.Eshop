@@ -6,12 +6,14 @@ import type { ProductSpecification } from '@/types';
 import { useSpecificationMutations } from '../hooks/useSpecificationMutations';
 import type { SpecificationUpdatePayload } from '../types';
 
+// Props required to render the specifications editor.
 interface SpecificationsEditorProps {
   productId: string;
   specifications: ProductSpecification[];
   onStatusMessage: (message: string) => void;
 }
 
+// Renders admin controls to add, edit, and delete specifications.
 export function SpecificationsEditor({
   productId,
   specifications,
@@ -33,6 +35,7 @@ export function SpecificationsEditor({
     }
   );
 
+  // Handles new specification submissions.
   function createSpecification(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!productId || !specLabel.trim() || !specValue.trim()) {

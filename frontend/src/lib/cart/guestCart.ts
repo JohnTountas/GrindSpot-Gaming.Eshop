@@ -4,12 +4,17 @@
 import api from "@/lib/api/client";
 import type { Cart, CartItem, Product } from "@/types";
 
+// LocalStorage key used to persist guest cart data.
 const GUEST_CART_STORAGE_KEY = "grindspot:guest-cart";
+// Custom browser event name fired when guest cart data changes.
 const GUEST_CART_EVENT = "grindspot:guest-cart-updated";
+// Synthetic cart id used for guest carts before login.
 const GUEST_CART_ID = "guest-cart";
 
+// Stored guest cart shape without computed totals.
 type StoredGuestCart = Omit<Cart, "total">;
 
+// Builds a blank guest cart record with timestamps.
 function createEmptyGuestCart(): StoredGuestCart {
   const timestamp = new Date().toISOString();
 
@@ -21,6 +26,7 @@ function createEmptyGuestCart(): StoredGuestCart {
   };
 }
 
+// Type guard to validate stored cart items before hydration.
 function isStoredCartItem(value: unknown): value is CartItem {
   if (!value || typeof value !== "object") {
     return false;
@@ -36,6 +42,7 @@ function isStoredCartItem(value: unknown): value is CartItem {
   );
 }
 
+// Computes cart totals and returns a full cart shape.
 function toGuestCart(cart: StoredGuestCart): Cart {
   const total = cart.items.reduce((sum, item) => {
     return sum + Number(item.product.price) * item.quantity;
@@ -47,6 +54,7 @@ function toGuestCart(cart: StoredGuestCart): Cart {
   };
 }
 
+// Emits a browser event to notify listeners of guest cart changes.
 function dispatchGuestCartUpdated() {
   if (typeof window === "undefined") {
     return;
@@ -55,6 +63,7 @@ function dispatchGuestCartUpdated() {
   window.dispatchEvent(new Event(GUEST_CART_EVENT));
 }
 
+// Persists guest cart data to storage and returns the computed cart.
 function persistStoredGuestCart(cart: StoredGuestCart): Cart {
   if (typeof window === "undefined") {
     return toGuestCart(cart);
@@ -65,6 +74,7 @@ function persistStoredGuestCart(cart: StoredGuestCart): Cart {
   return toGuestCart(cart);
 }
 
+// Reads and sanitizes the guest cart stored in the browser.
 function readStoredGuestCart(): StoredGuestCart {
   if (typeof window === "undefined") {
     return createEmptyGuestCart();
@@ -99,6 +109,7 @@ function readStoredGuestCart(): StoredGuestCart {
   }
 }
 
+// Creates a cart item record for a guest cart entry.
 function buildGuestCartItem(
   product: Product,
   quantity: number,
@@ -117,26 +128,31 @@ function buildGuestCartItem(
   };
 }
 
+// Throws if the provided quantity is invalid or below 1.
 function ensureValidQuantity(quantity: number) {
   if (!Number.isFinite(quantity) || quantity < 1) {
     throw new Error("Quantity must be at least 1");
   }
 }
 
+// Throws when requested quantity exceeds product stock.
 function ensureStockAvailable(product: Product, quantity: number) {
   if (product.stock < quantity) {
     throw new Error("Insufficient stock");
   }
 }
 
+// Returns the current guest cart with totals computed.
 export function readGuestCart(): Cart {
   return toGuestCart(readStoredGuestCart());
 }
 
+// Checks whether the guest cart contains any items.
 export function guestCartHasItems(): boolean {
   return readStoredGuestCart().items.length > 0;
 }
 
+// Adds an item to the guest cart, merging quantities when needed.
 export function addGuestCartItem(product: Product, quantity: number): Cart {
   ensureValidQuantity(quantity);
 
@@ -159,6 +175,7 @@ export function addGuestCartItem(product: Product, quantity: number): Cart {
   });
 }
 
+// Updates the quantity of an existing guest cart item.
 export function updateGuestCartItem(itemId: string, quantity: number): Cart {
   ensureValidQuantity(quantity);
 
@@ -180,6 +197,7 @@ export function updateGuestCartItem(itemId: string, quantity: number): Cart {
   });
 }
 
+// Removes an item from the guest cart by id.
 export function removeGuestCartItem(itemId: string): Cart {
   const cart = readStoredGuestCart();
 
@@ -190,6 +208,7 @@ export function removeGuestCartItem(itemId: string): Cart {
   });
 }
 
+// Clears all guest cart data and returns an empty cart.
 export function clearGuestCart(): Cart {
   const emptyCart = createEmptyGuestCart();
 
@@ -201,6 +220,7 @@ export function clearGuestCart(): Cart {
   return toGuestCart(emptyCart);
 }
 
+// Subscribes to guest cart updates and returns an unsubscribe function.
 export function subscribeToGuestCart(handler: (cart: Cart) => void): () => void {
   if (typeof window === "undefined") {
     return () => undefined;
@@ -217,6 +237,7 @@ export function subscribeToGuestCart(handler: (cart: Cart) => void): () => void 
   };
 }
 
+// Pushes guest cart items to the server after login and reports counts.
 export async function syncGuestCartToServer(): Promise<{ syncedCount: number; remainingCount: number }> {
   const items = [...readStoredGuestCart().items];
   let syncedCount = 0;

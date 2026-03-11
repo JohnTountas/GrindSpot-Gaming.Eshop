@@ -3,8 +3,10 @@
  */
 import winston from 'winston';
 
+// Selects a sensible default log level by environment.
 const logLevel = process.env.NODE_ENV === 'production' ? 'info' : 'debug';
 
+// Creates the shared Winston logger used across the backend.
 const logger = winston.createLogger({
   level: logLevel,
   format: winston.format.combine(
@@ -20,7 +22,7 @@ const logger = winston.createLogger({
   ],
 });
 
-// If not in production, log to console as well
+// If not in production, also emit logs to the console for local debugging.
 if (process.env.NODE_ENV !== 'production') {
   logger.add(
     new winston.transports.Console({

@@ -6,6 +6,7 @@ import { asyncHandler } from '../../middleware/error.middleware';
 import { AuthRequest } from '../../middleware/auth.middleware';
 import { AdminCatalogService } from './adminCatalog.service';
 
+// Service instance used by admin catalog controllers.
 const adminCatalogService = new AdminCatalogService();
 
 // Lists products.

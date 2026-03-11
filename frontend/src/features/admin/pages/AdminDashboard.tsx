@@ -15,6 +15,7 @@ import { useUpdateOrderStatus } from '../hooks/useUpdateOrderStatus';
 import type { AdminOrder } from '../types';
 import { formatCurrency } from '../utils/formatCurrency';
 
+// Fallback arrays used while admin data is loading.
 const EMPTY_ORDERS: AdminOrder[] = [];
 const EMPTY_ADMIN_PRODUCTS: Product[] = [];
 

@@ -6,12 +6,14 @@ import type { ProductReview } from '@/types';
 import { useReviewMutations } from '../hooks/useReviewMutations';
 import type { ReviewUpdatePayload } from '../types';
 
+// Props required to render the reviews editor.
 interface ReviewsEditorProps {
   productId: string;
   reviews: ProductReview[];
   onStatusMessage: (message: string) => void;
 }
 
+// Renders admin controls to add, edit, and delete reviews.
 export function ReviewsEditor({ productId, reviews, onStatusMessage }: ReviewsEditorProps) {
   const [reviewAuthor, setReviewAuthor] = useState('');
   const [reviewTitle, setReviewTitle] = useState('');
@@ -33,6 +35,7 @@ export function ReviewsEditor({ productId, reviews, onStatusMessage }: ReviewsEd
     }
   );
 
+  // Handles new review submissions.
   function createReview(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!productId || !reviewAuthor.trim() || !reviewComment.trim()) {

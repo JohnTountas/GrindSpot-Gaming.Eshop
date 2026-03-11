@@ -4,6 +4,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { Prisma } from '@prisma/client';
 
+/**
+ * Operational error type used to signal expected API failures.
+ */
 export class AppError extends Error {
   statusCode: number;
   isOperational: boolean;
@@ -16,6 +19,9 @@ export class AppError extends Error {
   }
 }
 
+/**
+ * Type definition for async route handlers that may throw errors.
+ */
 type AsyncRouteHandler = (
   req: Request,
   res: Response,

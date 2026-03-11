@@ -7,13 +7,19 @@
  * - SEED_RESET=true clears catalog-related data before reseeding.
  * - SEED_RESET_USERS=true also deletes users during a reset run.
  */
+import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL ?? "" }),
+});
 
+// Controls how many products each category should receive during seeding.
 const TARGET_PRODUCTS_PER_CATEGORY = 10;
 
+// Defines the seedable product data shape.
 type DatabaseProduct = {
   title: string;
   description: string;
@@ -22,16 +28,20 @@ type DatabaseProduct = {
   stock: number;
 };
 
+// Enumerates category slugs used by seed data.
 type CategorySlang = "Gaming-desktop-pc" | "Keyboards" | "Mouse" | "Headsets" | "Monitors";
 
+// Maps category slugs to their seeded products.
 type ProductsByCategory = Record<CategorySlang, DatabaseProduct[]>;
 
+// Represents a specification row used in seeding.
 type SeedSpecification = {
   label: string;
   value: string;
   position: number;
 };
 
+// Represents a review row used in seeding.
 type SeedReview = {
   authorName: string;
   title: string;
@@ -40,8 +50,10 @@ type SeedReview = {
   verifiedPurchase: boolean;
 };
 
+// Enumerates supported seed user roles.
 type SeedUserRole = "ADMIN" | "USER";
 
+// Describes the environment-driven seed user input.
 type SeedUserDefinition = {
   emailEnvKey: string;
   passwordEnvKey: string;

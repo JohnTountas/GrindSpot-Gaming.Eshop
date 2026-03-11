@@ -8,6 +8,7 @@ import { readGuestCart, updateGuestCartItem } from '@/lib/cart/guestCart';
 import { getApiErrorMessage } from '@/lib/api/error';
 import type { Cart } from '@/types';
 
+// Options for reacting to cart-item update lifecycle events.
 interface UseUpdateCartItemOptions {
   authed: boolean;
   onGuestCartUpdated?: (cart: Cart) => void;
@@ -17,6 +18,7 @@ interface UseUpdateCartItemOptions {
   onSettled?: () => void;
 }
 
+// React Query mutation hook to update a cart item's quantity.
 export function useUpdateCartItem({
   authed,
   onGuestCartUpdated,

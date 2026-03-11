@@ -6,6 +6,7 @@ import { CartService } from './cart.service';
 import { asyncHandler } from '../../middleware/error.middleware';
 import { AuthRequest } from '../../middleware/auth.middleware';
 
+// Service instance used by cart controllers.
 const cartService = new CartService();
 
 // Retrieves the authenticated user's cart with line items and products.

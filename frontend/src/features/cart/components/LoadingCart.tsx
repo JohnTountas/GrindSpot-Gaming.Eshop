@@ -1,6 +1,7 @@
 /**
  * Skeleton UI for cart page loading.
  */
+// Renders skeleton placeholders while cart data is loading.
 export function LoadingCart() {
   return (
     <section aria-label="Loading cart" className="space-y-5">

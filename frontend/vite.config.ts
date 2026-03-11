@@ -5,6 +5,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
+// Builds the Vite configuration for development and production builds.
 export default defineConfig({
   plugins: [react()],
   resolve: {

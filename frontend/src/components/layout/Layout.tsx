@@ -11,9 +11,11 @@ import ToastHost from "@/components/feedback/ToastHost";
 import { BRAND_LOGO_SRC, BRAND_NAME, BRAND_POSITIONING, BRAND_TAGLINE } from "@/lib/brand/identity";
 import { showSuccessMessage } from "@/lib/ui/toast";
 
+// Custom event name used to open footer policy/support modals.
 const FOOTER_MESSAGE_EVENT = "grindspot:open-footer-message";
 
 // Centralized navigation style builder keeps active/inactive link behavior consistent.
+// Generates navigation link styles based on active route state.
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   `inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold tracking-[0.08em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-700 ${
     isActive
@@ -22,6 +24,7 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
   }`;
 
 // Footer knowledge-base content keyed by event names used across the app.
+// Footer modal content keyed by support/policy identifiers.
 const FOOTER_MESSAGES = {
   helpCenter: {
     section: "Support",
@@ -65,6 +68,7 @@ const FOOTER_MESSAGES = {
   },
 } as const;
 
+// Union of allowed footer message keys.
 type FooterMessageKey = keyof typeof FOOTER_MESSAGES;
 
 // Validates that unknown event payloads map to a supported footer message key.

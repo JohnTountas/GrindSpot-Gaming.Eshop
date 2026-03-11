@@ -6,6 +6,7 @@ import { addCartItem } from '@/features/cart/api/cart';
 import { cartKey } from '@/features/cart/queryKeys';
 import { getApiErrorMessage } from '@/lib/api/error';
 
+// Options for reacting to quick add-to-cart mutation events.
 interface UseQuickAddToCartOptions {
   onMutate?: (productId: string) => void;
   onSuccess?: (productId: string) => void;
@@ -13,6 +14,7 @@ interface UseQuickAddToCartOptions {
   onSettled?: () => void;
 }
 
+// React Query mutation hook for adding a product to the cart.
 export function useQuickAddToCart(options: UseQuickAddToCartOptions = {}) {
   const queryClient = useQueryClient();
 

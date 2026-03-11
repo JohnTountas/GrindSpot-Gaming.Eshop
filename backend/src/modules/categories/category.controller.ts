@@ -5,6 +5,7 @@ import { Request, Response, NextFunction } from 'express';
 import { CategoryService } from './category.service';
 import { asyncHandler } from '../../middleware/error.middleware';
 
+// Service instance used by category controllers.
 const categoryService = new CategoryService();
 
 // Retrieves categories.

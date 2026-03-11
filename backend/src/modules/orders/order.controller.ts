@@ -6,6 +6,7 @@ import { OrderService } from './order.service';
 import { asyncHandler } from '../../middleware/error.middleware';
 import { AuthRequest } from '../../middleware/auth.middleware';
 
+// Service instance used by order controllers.
 const orderService = new OrderService();
 
 // Creates an order from the authenticated user's current cart.

@@ -7,14 +7,17 @@ import { createReview, deleteReview, updateReview } from '../api/adminCatalog';
 import { adminProductContentKey } from '../queryKeys';
 import type { ReviewPayload, ReviewUpdatePayload } from '../types';
 
+// Options for reacting to review mutation events.
 interface UseReviewMutationsOptions {
   onStatusMessage?: (message: string) => void;
   onCreated?: () => void;
 }
 
+// Bundles create/update/delete review mutations for an admin product.
 export function useReviewMutations(productId: string, options: UseReviewMutationsOptions = {}) {
   const queryClient = useQueryClient();
 
+  // Refreshes product content after review mutations.
   async function refreshContent() {
     if (!productId) {
       return;

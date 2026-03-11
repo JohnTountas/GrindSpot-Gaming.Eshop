@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { subscribeToToasts, ToastPayload } from '@/lib/ui/toast';
 
+// Fallback auto-dismiss duration for toasts without explicit timing.
 const DEFAULT_DURATION_MS = 2600;
 
 // Renders and auto-dismisses global toast notifications dispatched through window events.

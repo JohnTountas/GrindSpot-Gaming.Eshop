@@ -1,3 +1,6 @@
+/**
+ * ESLint configuration for the backend TypeScript codebase.
+ */
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -23,6 +26,7 @@ module.exports = {
     'dist',
     'node_modules',
     '*.config.js',
+    'prisma.config.ts',
     'prisma/**/*.ts',
     'tests/**/*.ts',
   ],

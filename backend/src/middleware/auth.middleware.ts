@@ -5,6 +5,9 @@ import { Request, Response, NextFunction } from "express";
 import { AppError } from "./error.middleware";
 import { verifyToken } from "../utils/jwt";
 
+/**
+ * Express request extended with authenticated user context.
+ */
 export interface AuthRequest extends Request {
   user?: {
     id: string;

@@ -1,4 +1,5 @@
 #!/bin/sh
+# Container entrypoint that applies migrations, optionally seeds data, and starts the API.
 set -e
 
 if [ -z "${DATABASE_URL:-}" ]; then

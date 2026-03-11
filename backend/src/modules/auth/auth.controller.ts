@@ -8,8 +8,10 @@ import { AuthRequest } from '../../middleware/auth.middleware';
 import { verifyRefreshToken, generateToken } from '../../utils/jwt';
 import { AppError } from '../../middleware/error.middleware';
 
+// Service instance used by auth controllers.
 const authService = new AuthService();
 
+// Cookie settings for refresh token persistence.
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',

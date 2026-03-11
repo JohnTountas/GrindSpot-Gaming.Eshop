@@ -6,11 +6,13 @@ import { updateAdminOrderStatus } from '../api/adminOrders';
 import { adminOrdersKey } from '../queryKeys';
 import type { OrderStatus } from '../types';
 
+// Options for reacting to order status update events.
 interface UseUpdateOrderStatusOptions {
   onSuccess?: () => void;
   onError?: (error: unknown) => void;
 }
 
+// React Query mutation hook to update an order status.
 export function useUpdateOrderStatus(options: UseUpdateOrderStatusOptions = {}) {
   const queryClient = useQueryClient();
 

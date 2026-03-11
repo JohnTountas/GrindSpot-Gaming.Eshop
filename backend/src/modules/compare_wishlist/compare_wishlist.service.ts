@@ -6,6 +6,9 @@ import { AppError } from '../../middleware/error.middleware';
 
 const COMPARE_LIMIT = 4;
 
+/**
+ * Manages wishlist and compare-list behavior for a user.
+ */
 export class compare_wishlist {
   // Verifies a product exists before applying storefront mutations.
   private async assertProductExists(productId: string) {

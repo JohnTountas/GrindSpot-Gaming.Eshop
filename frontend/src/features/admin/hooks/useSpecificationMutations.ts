@@ -11,17 +11,20 @@ import {
 import { adminProductContentKey } from '../queryKeys';
 import type { SpecificationPayload, SpecificationUpdatePayload } from '../types';
 
+// Options for reacting to specification mutation events.
 interface UseSpecificationMutationsOptions {
   onStatusMessage?: (message: string) => void;
   onCreated?: () => void;
 }
 
+// Bundles create/update/delete specification mutations for an admin product.
 export function useSpecificationMutations(
   productId: string,
   options: UseSpecificationMutationsOptions = {}
 ) {
   const queryClient = useQueryClient();
 
+  // Refreshes product content after specification mutations.
   async function refreshContent() {
     if (!productId) {
       return;

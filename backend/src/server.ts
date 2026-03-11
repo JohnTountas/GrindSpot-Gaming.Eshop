@@ -104,6 +104,7 @@ async function startServer(
   );
 }
 
+// Resolves runtime configuration and database retry behavior.
 const serverPort = resolveServerPort(config.port, DEFAULT_PORT);
 const serverHost = DEFAULT_HOST;
 const DB_CONNECT_MAX_RETRIES = parseInt(process.env.DB_CONNECT_MAX_RETRIES || "10", 10);

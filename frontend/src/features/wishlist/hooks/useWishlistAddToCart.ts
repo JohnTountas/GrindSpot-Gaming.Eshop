@@ -6,6 +6,7 @@ import { addWishlistItemToCart } from '../api/wishlist';
 import { wishlistProductsKey } from '../queryKeys';
 import { cartKey } from '@/features/cart/queryKeys';
 
+// Options for reacting to add-to-cart mutation lifecycle events.
 interface UseWishlistAddToCartOptions {
   onMutate?: (productId: string) => void;
   onSuccess?: (productId: string) => void;
@@ -13,6 +14,7 @@ interface UseWishlistAddToCartOptions {
   onSettled?: () => void;
 }
 
+// React Query mutation hook to add a wishlist item to the cart.
 export function useWishlistAddToCart(options: UseWishlistAddToCartOptions = {}) {
   const queryClient = useQueryClient();
 

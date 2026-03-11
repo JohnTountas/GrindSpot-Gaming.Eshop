@@ -46,6 +46,9 @@ export const getProductsSchema = z.object({
   }),
 });
 
+// TypeScript shape for create-product request bodies after validation.
 export type CreateProductDTO = z.infer<typeof createProductSchema>['body'];
+// TypeScript shape for update-product request bodies after validation.
 export type UpdateProductDTO = z.infer<typeof updateProductSchema>['body'];
+// TypeScript shape for product list query parameters after validation.
 export type GetProductsQuery = z.infer<typeof getProductsSchema>['query'];

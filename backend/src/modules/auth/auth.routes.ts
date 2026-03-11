@@ -10,24 +10,15 @@ import { registerSchema, loginSchema } from "./auth.dto";
 
 const router = Router();
 
-//       description: User registered successfully
-
 router.post("/register", authLimiter, validate(registerSchema), authController.register);
-
-//       description: Login successful
-
 router.post("/login", authLimiter, validate(loginSchema), authController.login);
-
-//        description: Token refreshed successfully
-
 router.post("/refresh", authController.refresh);
-
-//        description: Logout successful
-
 router.post("/logout", authenticate, authController.logout);
-
-//   description: User profile retrieved
-
 router.get("/me", authenticate, authController.getMe);
 
 export default router;
+//: User registered successfully
+//: Login successful
+//: Token refreshed successfully
+//: Logout successful
+//: User profile retrieved

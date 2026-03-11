@@ -4,6 +4,7 @@
 import { Router } from 'express';
 import * as categoryController from './category.controller';
 
+// Express router for category endpoints.
 const router = Router();
 
 /**

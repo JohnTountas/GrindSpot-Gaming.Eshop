@@ -1,3 +1,4 @@
+# Backend Dockerfile for building and running the API service.
 # ---------- Build Stage ----------
 FROM node:20 AS builder
 

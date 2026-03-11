@@ -3,6 +3,7 @@
  */
 import { digitsOnly } from './formatters';
 
+// Validates card numbers using length checks and the Luhn algorithm.
 export function isValidCardNumber(value: string) {
   const sanitized = digitsOnly(value);
   if (sanitized.length < 12 || sanitized.length > 19) {
@@ -27,6 +28,7 @@ export function isValidCardNumber(value: string) {
   return sum % 10 === 0;
 }
 
+// Validates card expiry input in MM/YY format.
 export function isValidExpiry(value: string) {
   const match = /^(\d{2})\/(\d{2})$/.exec(value);
   if (!match) {
@@ -54,6 +56,7 @@ export function isValidExpiry(value: string) {
   return true;
 }
 
+// Validates basic email format for checkout fields.
 export function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }

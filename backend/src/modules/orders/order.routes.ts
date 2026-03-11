@@ -7,9 +7,10 @@ import { authenticate, authorize } from '../../middleware/auth.middleware';
 import { validate } from '../../middleware/validate.middleware';
 import { createOrderSchema, updateOrderStatusSchema, getOrderSchema } from './order.dto';
 
+// Express router for customer order endpoints.
 const router = Router();
 
-// All order routes require authentication
+// All order routes require authentication.
 router.use(authenticate);
 
 /**
@@ -69,7 +70,7 @@ router.get('/', orderController.getUserOrders);
  */
 router.get('/:id', validate(getOrderSchema), orderController.getOrder);
 
-// Admin routes
+// Express router for admin order endpoints.
 const adminRouter = Router();
 adminRouter.use(authenticate, authorize('ADMIN'));
 

@@ -5,6 +5,7 @@ import { ReactElement } from 'react';
 import { Navigate } from 'react-router-dom';
 import { getStoredUser, isAuthenticated } from '@/lib/auth/session';
 
+// Props supported by the ProtectedRoute guard.
 interface ProtectedRouteProps {
   children: ReactElement;
   adminOnly?: boolean;

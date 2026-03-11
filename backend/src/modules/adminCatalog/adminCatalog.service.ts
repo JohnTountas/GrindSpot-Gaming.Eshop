@@ -50,6 +50,9 @@ function parsePositiveInt(value: number | string | undefined, fallback: number) 
   return Math.max(1, Math.trunc(parsed));
 }
 
+/**
+ * Provides admin workflows for editing product specifications and reviews.
+ */
 export class AdminCatalogService {
   // Returns the database client used by admin catalog operations.
   private getDb() {

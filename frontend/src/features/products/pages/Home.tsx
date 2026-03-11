@@ -24,6 +24,7 @@ import { useQuickAddToCart } from '../hooks/useQuickAddToCart';
 import type { CategoryWithCount, SortOption } from '../types';
 import { formatCurrency } from '../utils/formatCurrency';
 
+// Fallback arrays used while queries are loading or empty.
 const EMPTY_PRODUCTS: Product[] = [];
 const EMPTY_CATEGORIES: CategoryWithCount[] = [];
 

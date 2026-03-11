@@ -1,6 +1,7 @@
 /**
  * Skeleton UI for wishlist page loading.
  */
+// Renders skeleton placeholders while wishlist data is loading.
 export function LoadingWishlist() {
   return (
     <section aria-label="Loading wishlist" className="space-y-5">

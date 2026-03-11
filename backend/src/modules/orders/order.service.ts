@@ -6,6 +6,9 @@ import { AppError } from '../../middleware/error.middleware';
 import { CreateOrderDTO, UpdateOrderStatusDTO } from './order.dto';
 import { OrderStatus, Prisma } from '@prisma/client';
 
+/**
+ * Coordinates order placement and retrieval logic.
+ */
 export class OrderService {
   // Creates an order from cart items, updates stock, and clears the cart in one transaction.
   async create(userId: string, data: CreateOrderDTO) {

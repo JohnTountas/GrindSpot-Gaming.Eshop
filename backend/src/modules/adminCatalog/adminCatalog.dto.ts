@@ -85,8 +85,12 @@ export const deleteReviewSchema = z.object({
   }),
 });
 
+// TypeScript shape for specification creation bodies after validation.
 export type CreateSpecificationDTO = z.infer<typeof createSpecificationSchema>['body'];
+// TypeScript shape for specification update bodies after validation.
 export type UpdateSpecificationDTO = z.infer<typeof updateSpecificationSchema>['body'];
+// TypeScript shape for review creation bodies after validation.
 export type CreateReviewDTO = z.infer<typeof createReviewSchema>['body'];
+// TypeScript shape for review update bodies after validation.
 export type UpdateReviewDTO = z.infer<typeof updateReviewSchema>['body'];
 

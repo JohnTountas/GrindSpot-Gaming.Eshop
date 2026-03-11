@@ -10,5 +10,6 @@ export const toggleStorefrontProductSchema = z.object({
   }),
 });
 
+// TypeScript shape for wishlist/compare toggle requests after validation.
 export type ToggleStorefrontProductDTO = z.infer<typeof toggleStorefrontProductSchema>['body'];
 

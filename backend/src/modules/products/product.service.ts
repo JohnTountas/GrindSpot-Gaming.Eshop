@@ -56,6 +56,9 @@ function parsePositiveInt(value: number | string | undefined, fallback: number) 
   return Math.max(1, Math.trunc(parsed));
 }
 
+/**
+ * Encapsulates product catalog business logic.
+ */
 export class ProductService {
   // Creates a product after validating that the referenced category exists.
   async create(data: CreateProductDTO) {

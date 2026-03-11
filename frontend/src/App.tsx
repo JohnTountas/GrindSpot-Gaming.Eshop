@@ -17,6 +17,7 @@ import Wishlist from './features/wishlist/pages/Wishlist';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Navigate } from 'react-router-dom';
 
+// Shared React Query client used across the application.
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

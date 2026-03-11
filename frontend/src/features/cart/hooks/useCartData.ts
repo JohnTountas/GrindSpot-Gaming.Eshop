@@ -9,6 +9,7 @@ import { readGuestCart, subscribeToGuestCart } from '@/lib/cart/guestCart';
 import { isAuthenticated } from '@/lib/auth/session';
 import type { Cart } from '@/types';
 
+// Provides a unified cart view for authenticated users and guests.
 export function useCartData() {
   const authed = isAuthenticated();
   const [guestCart, setGuestCart] = useState<Cart>(() => readGuestCart());

@@ -36,5 +36,7 @@ export const getOrderSchema = z.object({
   }),
 });
 
+// TypeScript shape for create-order request bodies after validation.
 export type CreateOrderDTO = z.infer<typeof createOrderSchema>['body'];
+// TypeScript shape for order-status updates after validation.
 export type UpdateOrderStatusDTO = z.infer<typeof updateOrderStatusSchema>['body'];

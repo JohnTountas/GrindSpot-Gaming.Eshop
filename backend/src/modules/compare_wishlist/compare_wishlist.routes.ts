@@ -7,8 +7,10 @@ import { validate } from '../../middleware/validate.middleware';
 import * as meController from './compare_wishlist.controller';
 import { toggleStorefrontProductSchema } from './compare_wishlist.dto';
 
+// Express router for wishlist/compare endpoints.
 const router = Router();
 
+// All storefront state routes require authentication.
 router.use(authenticate);
 
 router.get('/storefront', meController.getStorefrontState);

@@ -6,11 +6,13 @@ import { getApiErrorMessage } from '@/lib/api/error';
 import type { AuthResponse, RegisterData } from '@/types';
 import { register } from '../api/auth';
 
+// Optional callbacks for registration mutation behavior.
 interface UseRegisterOptions {
   onSuccess?: (response: AuthResponse) => void;
   onError?: (message: string) => void;
 }
 
+// React Query mutation hook for registering a new user.
 export function useRegister(options: UseRegisterOptions = {}) {
   return useMutation({
     mutationFn: (payload: RegisterData) => register(payload),

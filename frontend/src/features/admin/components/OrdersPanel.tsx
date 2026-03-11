@@ -5,11 +5,13 @@ import { ORDER_STATUSES, ORDER_STATUS_STYLES } from '../constants';
 import { formatCurrency } from '../utils/formatCurrency';
 import type { AdminOrder, OrderStatus } from '../types';
 
+// Props required to render the admin orders panel.
 interface OrdersPanelProps {
   orders: AdminOrder[];
   onUpdateStatus: (orderId: string, status: OrderStatus) => void;
 }
 
+// Renders a summary list of recent orders with status updates.
 export function OrdersPanel({ orders, onUpdateStatus }: OrdersPanelProps) {
   return (
     <section className="surface-card p-5">

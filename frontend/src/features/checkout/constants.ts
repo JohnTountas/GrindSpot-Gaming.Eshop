@@ -3,6 +3,7 @@
  */
 import type { PaymentOption } from './types';
 
+// Payment option catalog used by the checkout UI.
 export const PAYMENT_OPTIONS: PaymentOption[] = [
   {
     id: 'CARD',
@@ -36,4 +37,5 @@ export const PAYMENT_OPTIONS: PaymentOption[] = [
   },
 ];
 
+// Event name used to open footer policy/support modals.
 export const FOOTER_MESSAGE_EVENT = 'grindspot:open-footer-message';

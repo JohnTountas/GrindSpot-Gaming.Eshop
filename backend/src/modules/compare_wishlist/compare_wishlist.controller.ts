@@ -6,6 +6,7 @@ import { asyncHandler } from '../../middleware/error.middleware';
 import { AuthRequest } from '../../middleware/auth.middleware';
 import { compare_wishlist } from './compare_wishlist.service';
 
+// Service instance used by wishlist/compare controllers.
 const compare_wishlist_service = new compare_wishlist();
 
 // Retrieves current wishlist/compare state for the authenticated user.

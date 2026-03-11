@@ -1,3 +1,6 @@
+/**
+ * Launches Prisma Studio with a resolved schema engine binary when available.
+ */
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
@@ -6,6 +9,9 @@ const projectRoot = path.resolve(__dirname, "..");
 const enginesDir = path.join(projectRoot, "node_modules", "@prisma", "engines");
 const prismaCliPath = path.join(projectRoot, "node_modules", "prisma", "build", "index.js");
 
+/**
+ * Finds the local schema engine binary shipped by Prisma, if present.
+ */
 function resolveSchemaEngineBinary() {
   if (!fs.existsSync(enginesDir)) {
     return null;

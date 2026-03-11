@@ -1,6 +1,9 @@
 /**
  * Jest test runner configuration for backend unit tests.
  */
+/**
+ * Jest configuration for backend unit and integration tests.
+ */
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',

@@ -7,9 +7,10 @@ import { authenticate } from '../../middleware/auth.middleware';
 import { validate } from '../../middleware/validate.middleware';
 import { addToCartSchema, updateCartItemSchema, removeCartItemSchema } from './cart.dto';
 
+// Express router for cart endpoints.
 const router = Router();
 
-// All cart routes require authentication
+// All cart routes require authentication.
 router.use(authenticate);
 
 /**

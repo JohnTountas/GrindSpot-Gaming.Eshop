@@ -28,5 +28,7 @@ export const removeCartItemSchema = z.object({
   }),
 });
 
+// TypeScript shape for add-to-cart request bodies after validation.
 export type AddToCartDTO = z.infer<typeof addToCartSchema>['body'];
+// TypeScript shape for cart-item updates after validation.
 export type UpdateCartItemDTO = z.infer<typeof updateCartItemSchema>['body'];

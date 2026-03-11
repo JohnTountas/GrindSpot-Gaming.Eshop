@@ -3,6 +3,7 @@
  */
 import type { ShowcaseCategory, SortOption } from './types';
 
+// Supported sort options for catalog views.
 export const SORT_OPTIONS: Array<{ label: string; value: SortOption }> = [
   { label: 'Featured', value: 'featured' },
   { label: 'Best rating', value: 'rating' },
@@ -11,6 +12,7 @@ export const SORT_OPTIONS: Array<{ label: string; value: SortOption }> = [
   { label: 'Newest', value: 'newest' },
 ];
 
+// Curated categories used in the homepage showcase.
 export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   {
     name: 'Gaming Desktop PC',

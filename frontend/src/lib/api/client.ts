@@ -3,9 +3,10 @@
  */
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
+// Base API URL used by the frontend HTTP client.
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
-// Create axios instance
+// Axios instance configured for JSON APIs and credentialed requests.
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -14,7 +15,7 @@ export const api = axios.create({
   withCredentials: true, // Include cookies for refresh tokens
 });
 
-// Request interceptor to add auth token
+// Attaches the access token to outgoing requests when present.
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('accessToken');
@@ -26,7 +27,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle token refresh
+// Handles token refresh on 401 responses and retries the original request.
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {

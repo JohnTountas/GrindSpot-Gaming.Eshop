@@ -21,5 +21,7 @@ export const loginSchema = z.object({
   }),
 });
 
+// TypeScript shape for register request bodies after validation.
 export type RegisterDTO = z.infer<typeof registerSchema>['body'];
+// TypeScript shape for login request bodies after validation.
 export type LoginDTO = z.infer<typeof loginSchema>['body'];

@@ -12,6 +12,7 @@ import {
   listProductsSchema,
 } from './product.dto';
 
+// Express router for product endpoints.
 const router = Router();
 
 /**

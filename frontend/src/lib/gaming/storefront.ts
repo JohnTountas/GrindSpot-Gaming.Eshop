@@ -7,6 +7,7 @@ import api from "@/lib/api/client";
 import { isAuthenticated } from "@/lib/auth/session";
 import { Product } from "@/types";
 
+// Minimal product shape required for storefront helpers.
 type ProductLike = Pick<Product, "id" | "title" | "price"> & {
   category?: {
     name?: string;
@@ -14,28 +15,35 @@ type ProductLike = Pick<Product, "id" | "title" | "price"> & {
   };
 };
 
+// Server-backed storefront state for wishlist/compare.
 type StorefrontState = {
   wishlistProductIds: string[];
   compareProductIds: string[];
   compareLimit: number;
 };
 
+// Normalized response returned by toggle handlers.
 type StorefrontToggleResult = {
   added: boolean;
   ids: string[];
   reachedLimit: boolean;
 };
 
+// API response shape for wishlist/compare toggle endpoints.
 type StorefrontToggleResponse = StorefrontState & {
   added: boolean;
   reachedLimit?: boolean;
 };
 
 // Shared query/storage keys keep storefront state wiring centralized and typo-safe.
+// React Query cache key for storefront state.
 const STOREFRONT_QUERY_KEY = ["storefront-state"];
+// LocalStorage key for guest compare ids.
 const GUEST_COMPARE_STORAGE_KEY = "guestCompareProductIds";
+// Brand mappings for multi-word names that need normalization.
 const TWO_WORD_BRANDS = new Map<string, string>([["cooler master", "Cooler Master"]]);
 
+// Brand mappings for single-word names that need normalization.
 const ONE_WORD_BRANDS: Record<string, string> = {
   vengeance: "Vengeance",
   ajazz: "Ajazz",
@@ -53,6 +61,7 @@ const ONE_WORD_BRANDS: Record<string, string> = {
   xiaomi: "Xiaomi",
 };
 
+// Default storefront state used as a fallback when no data is available.
 const DEFAULT_STOREFRONT_STATE: StorefrontState = {
   wishlistProductIds: [],
   compareProductIds: [],
@@ -135,6 +144,7 @@ function toTitleCase(value: string): string {
 }
 
 // Fetches authenticated storefront state shared by wishlist and compare hooks.
+// Fetches storefront state for authenticated users.
 function useStorefrontState() {
   const authed = isAuthenticated();
 

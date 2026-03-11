@@ -7,6 +7,9 @@ import { generateToken, generateRefreshToken } from '../../utils/jwt';
 import { AppError } from '../../middleware/error.middleware';
 import { RegisterDTO, LoginDTO } from './auth.dto';
 
+/**
+ * Handles authentication workflows such as registration and login.
+ */
 export class AuthService {
   // Processes user registration and issues initial authentication tokens.
   async register(data: RegisterDTO) {

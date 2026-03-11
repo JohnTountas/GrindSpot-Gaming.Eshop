@@ -8,6 +8,7 @@ import { readGuestCart, removeGuestCartItem } from '@/lib/cart/guestCart';
 import { getApiErrorMessage } from '@/lib/api/error';
 import type { Cart } from '@/types';
 
+// Options for reacting to cart-item removal lifecycle events.
 interface UseRemoveCartItemOptions {
   authed: boolean;
   onGuestCartUpdated?: (cart: Cart) => void;
@@ -17,6 +18,7 @@ interface UseRemoveCartItemOptions {
   onSettled?: () => void;
 }
 
+// React Query mutation hook to remove a cart item.
 export function useRemoveCartItem({
   authed,
   onGuestCartUpdated,

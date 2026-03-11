@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getProducts } from '../api/products';
 import { relatedProductsKey } from '../queryKeys';
 
+// React Query hook to load related products by category.
 export function useRelatedProducts(productId: string | undefined, categorySlang?: string) {
   return useQuery({
     queryKey: relatedProductsKey(productId, categorySlang),

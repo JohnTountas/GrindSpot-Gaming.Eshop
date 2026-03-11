@@ -3,6 +3,9 @@
  */
 import prisma from '../../config/database';
 
+/**
+ * Handles category-related data retrieval.
+ */
 export class CategoryService {
   // Returns all categories with product counts, sorted alphabetically.
   async findAll() {

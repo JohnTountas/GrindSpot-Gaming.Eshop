@@ -3,6 +3,7 @@
  */
 import type { PaymentMethod } from '../types';
 
+// Creates a simulated payment intent id for non-live checkout flows.
 export function buildPaymentIntentId(method: PaymentMethod, fingerprintSource: string) {
   const fingerprint =
     fingerprintSource

@@ -6,6 +6,7 @@ import { ProductService } from './product.service';
 import { asyncHandler } from '../../middleware/error.middleware';
 import { AuthRequest } from '../../middleware/auth.middleware';
 
+// Service instance used by product controllers.
 const productService = new ProductService();
 
 // Creates product.

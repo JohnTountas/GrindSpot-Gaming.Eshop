@@ -2,6 +2,7 @@
  * Shared frontend domain types aligned with backend API contracts.
  */
 // User and authentication contracts mirrored from the backend auth module.
+/** Represents an authenticated user profile. */
 export interface User {
   id: string;
   email: string;
@@ -13,22 +14,26 @@ export interface User {
 }
 
 // Auth types
+/** Credentials required to log in. */
 export interface LoginCredentials {
   email: string;
   password: string;
 }
 
+/** Registration payload extending basic login credentials. */
 export interface RegisterData extends LoginCredentials {
   firstName?: string;
   lastName?: string;
 }
 
+/** Auth response returned after successful login/registration. */
 export interface AuthResponse {
   user: User;
   accessToken: string;
 }
 
 // Catalog entities used by list/detail pages and admin-facing product editing.
+/** Specification line item attached to a product. */
 export interface ProductSpecification {
   id: string;
   productId: string;
@@ -39,6 +44,7 @@ export interface ProductSpecification {
   updatedAt: string;
 }
 
+/** Customer review attached to a product. */
 export interface ProductReview {
   id: string;
   productId: string;
@@ -52,6 +58,7 @@ export interface ProductReview {
   updatedAt: string;
 }
 
+/** Product catalog entity used across storefront and admin views. */
 export interface Product {
   id: string;
   title: string;
@@ -68,6 +75,7 @@ export interface Product {
   updatedAt: string;
 }
 
+/** Filter and pagination options for product listings. */
 export interface ProductFilters {
   search?: string;
   category?: string;
@@ -79,6 +87,7 @@ export interface ProductFilters {
   featured?: boolean;
 }
 
+/** Paginated response for product list queries. */
 export interface ProductsResponse {
   products: Product[];
   total: number;
@@ -87,6 +96,7 @@ export interface ProductsResponse {
 }
 
 // Category metadata powers filtering and navigation labels.
+/** Product category entity. */
 export interface Category {
   id: string;
   name: string;
@@ -97,6 +107,7 @@ export interface Category {
 }
 
 // Cart contracts back cart pages, checkout summaries, and quick-add interactions.
+/** Line item stored in a cart. */
 export interface CartItem {
   id: string;
   cartId: string;
@@ -107,6 +118,7 @@ export interface CartItem {
   updatedAt: string;
 }
 
+/** Shopping cart aggregate with item list and totals. */
 export interface Cart {
   id: string;
   userId?: string;
@@ -116,18 +128,22 @@ export interface Cart {
   updatedAt: string;
 }
 
+/** Payload for adding a product to the cart. */
 export interface AddToCartData {
   productId: string;
   quantity: number;
 }
 
+/** Payload for updating a cart item quantity. */
 export interface UpdateCartItemData {
   quantity: number;
 }
 
 // Order contracts map directly to checkout, history, and detail experiences.
+/** Allowed order lifecycle statuses. */
 export type OrderStatus = 'PENDING' | 'PAID' | 'SHIPPED' | 'CANCELLED';
 
+/** Shipping address captured during checkout. */
 export interface ShippingAddress {
   fullName: string;
   address: string;
@@ -138,6 +154,7 @@ export interface ShippingAddress {
   phone: string;
 }
 
+/** Line item stored within an order. */
 export interface OrderItem {
   id: string;
   orderId: string;
@@ -147,6 +164,7 @@ export interface OrderItem {
   quantity: number;
 }
 
+/** Order aggregate returned by the API. */
 export interface Order {
   id: string;
   userId: string;
@@ -159,17 +177,20 @@ export interface Order {
   updatedAt: string;
 }
 
+/** Payload for creating a new order. */
 export interface CreateOrderData {
   shippingAddress: ShippingAddress;
   paymentIntentId?: string;
 }
 
+/** Paginated response for order list queries. */
 export interface OrdersResponse {
   orders: Order[];
   total: number;
 }
 
 // Common API error envelope used by error helpers and mutation failure states.
+/** Error envelope returned by API failures. */
 export interface ApiError {
   error: string;
   details?: Array<{

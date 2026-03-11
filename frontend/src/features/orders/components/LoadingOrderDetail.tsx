@@ -1,6 +1,7 @@
 /**
  * Skeleton UI for order detail view.
  */
+// Renders skeleton placeholders while order detail data loads.
 export function LoadingOrderDetail() {
   return (
     <section aria-label="Loading order detail" className="space-y-5">

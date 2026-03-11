@@ -5,6 +5,9 @@ import prisma from '../../config/database';
 import { AppError } from '../../middleware/error.middleware';
 import { AddToCartDTO, UpdateCartItemDTO } from './cart.dto';
 
+/**
+ * Manages cart state, items, and totals for a user.
+ */
 export class CartService {
   // Retrieves the authenticated user's cart with line items and products.
   async getCart(userId: string) {

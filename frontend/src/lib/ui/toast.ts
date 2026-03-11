@@ -3,9 +3,12 @@
  */
 import { ReactNode } from "react";
 
+// Supported semantic tones for toast notifications.
 export type ToastTone = "success" | "error";
+// Supported placements for toast rendering.
 export type FinalOrderMessage = "top-right" | "center";
 
+// Payload delivered with toast notification events.
 export interface ToastPayload {
   title: string;
   message?: ReactNode;
@@ -16,6 +19,7 @@ export interface ToastPayload {
   actionTo?: string;
 }
 
+// Custom browser event name used to broadcast toasts.
 const TOAST_EVENT = "grindspot:toast";
 
 // Dispatches a typed toast event that can be consumed anywhere in the app shell.

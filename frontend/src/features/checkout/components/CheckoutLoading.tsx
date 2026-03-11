@@ -1,6 +1,7 @@
 /**
  * Skeleton UI for checkout page loading.
  */
+// Renders skeleton placeholders while checkout data is loading.
 export function CheckoutLoading() {
   return (
     <section aria-label="Loading checkout" className="space-y-5">
