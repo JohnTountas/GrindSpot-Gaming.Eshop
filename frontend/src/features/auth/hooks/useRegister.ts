@@ -2,8 +2,8 @@
  * Mutation hook for registration.
  */
 import { useMutation } from '@tanstack/react-query';
-import { getApiErrorMessage } from '@/lib/api/error';
-import type { AuthResponse, RegisterData } from '@/types';
+import { getApiErrorMessage } from '@/shared/api/error';
+import type { AuthResponse, RegisterData } from '@/shared/types';
 import { register } from '../api/auth';
 
 // Optional callbacks for registration mutation behavior.
@@ -24,3 +24,4 @@ export function useRegister(options: UseRegisterOptions = {}) {
     },
   });
 }
+

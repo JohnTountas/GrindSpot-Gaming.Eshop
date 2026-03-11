@@ -4,9 +4,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { removeCartItem as removeCartItemApi } from '../api/cart';
 import { cartKey } from '../queryKeys';
-import { readGuestCart, removeGuestCartItem } from '@/lib/cart/guestCart';
-import { getApiErrorMessage } from '@/lib/api/error';
-import type { Cart } from '@/types';
+import { readGuestCart, removeGuestCartItem } from '@/shared/cart/guestCart';
+import { getApiErrorMessage } from '@/shared/api/error';
+import type { Cart } from '@/shared/types';
 
 // Options for reacting to cart-item removal lifecycle events.
 interface UseRemoveCartItemOptions {
@@ -55,3 +55,4 @@ export function useRemoveCartItem({
     },
   });
 }
+

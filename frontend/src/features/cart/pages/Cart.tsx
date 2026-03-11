@@ -3,13 +3,13 @@
  */
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CartItem } from '@/types';
-import { getApiErrorMessage } from '@/lib/api/error';
+import { CartItem } from '@/shared/types';
+import { getApiErrorMessage } from '@/shared/api/error';
 import { LoadingCart } from '../components/LoadingCart';
 import { useCartData } from '../hooks/useCartData';
 import { useRemoveCartItem } from '../hooks/useRemoveCartItem';
 import { useUpdateCartItem } from '../hooks/useUpdateCartItem';
-import { formatCurrency } from '../utils/formatCurrency';
+import { formatCurrency } from '@/shared/utils/formatCurrency';
 
 // Coordinates cart data fetching, quantity mutations, removal actions, and order summary totals.
 function Cart() {
@@ -298,3 +298,5 @@ function Cart() {
 }
 
 export default Cart;
+
+

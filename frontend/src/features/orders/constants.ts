@@ -1,7 +1,7 @@
 /**
  * Visual mapping for order statuses.
  */
-import type { Order } from '@/types';
+import type { Order } from '@/shared/types';
 
 // Maps order statuses to UI class names.
 export const ORDER_STATUS_STYLES: Record<Order['status'], string> = {
@@ -10,3 +10,4 @@ export const ORDER_STATUS_STYLES: Record<Order['status'], string> = {
   SHIPPED: 'border-emerald-200 bg-emerald-50 text-emerald-700',
   CANCELLED: 'border-red-200 bg-red-50 text-red-700',
 };
+

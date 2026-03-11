@@ -2,7 +2,7 @@
  * Mutations for admin specification CRUD operations.
  */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { getApiErrorMessage } from '@/lib/api/error';
+import { getApiErrorMessage } from '@/shared/api/error';
 import {
   createSpecification,
   deleteSpecification,
@@ -72,3 +72,4 @@ export function useSpecificationMutations(
     deleteSpecMutation,
   };
 }
+

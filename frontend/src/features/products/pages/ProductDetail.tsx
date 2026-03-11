@@ -4,10 +4,10 @@
 import { useMemo, useState } from "react";
 import type { MouseEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { getApiErrorMessage } from "@/lib/api/error";
-import { addGuestCartItem } from "@/lib/cart/guestCart";
-import { isAuthenticated } from "@/lib/auth/session";
-import { showCartAddedToast, showCompareAddedToast, showWishlistAddedToast } from "@/lib/ui/toast";
+import { getApiErrorMessage } from "@/shared/api/error";
+import { addGuestCartItem } from "@/shared/cart/guestCart";
+import { isAuthenticated } from "@/shared/auth/session";
+import { showCartAddedToast, showCompareAddedToast, showWishlistAddedToast } from "@/shared/ui/toast";
 import {
   buildReviewSnapshot,
   buildTechnicalSpecs,
@@ -15,11 +15,11 @@ import {
   getProductBrand,
   useCompare,
   useWishlist,
-} from "@/lib/gaming/storefront";
+} from "@/shared/storefront/storefront";
 import { useProduct } from "../hooks/useProduct";
 import { useRelatedProducts } from "../hooks/useRelatedProducts";
 import { useQuickAddToCart } from "../hooks/useQuickAddToCart";
-import { formatCurrency } from "../utils/formatCurrency";
+import { formatCurrency } from "@/shared/utils/formatCurrency";
 
 // Loads one product, manages interactive purchase actions, and renders deep product context.
 function ProductDetail() {
@@ -499,3 +499,5 @@ function ProductDetail() {
 }
 
 export default ProductDetail;
+
+

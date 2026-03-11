@@ -1,7 +1,7 @@
 /**
  * Domain models for the admin dashboard feature.
  */
-import type { Order, Product, ProductReview, ProductSpecification } from '@/types';
+import type { Order, Product, ProductReview, ProductSpecification } from '@/shared/types';
 
 // Order model enriched with user details for admin screens.
 export interface AdminOrder extends Order {
@@ -58,3 +58,4 @@ export interface ReviewPayload {
 export interface ReviewUpdatePayload extends ReviewPayload {
   reviewId: string;
 }
+

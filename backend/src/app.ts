@@ -17,7 +17,7 @@ import productRoutes from "./modules/products/product.routes";
 import cartRoutes from "./modules/cart/cart.routes";
 import orderRoutes, { adminRouter as adminOrderRoutes } from "./modules/orders/order.routes";
 import categoryRoutes from "./modules/categories/category.routes";
-import compareWishlistRoutes from "./modules/compare_wishlist/compare_wishlist.routes";
+import storefrontRoutes from "./modules/storefront/storefront.routes";
 import adminCatalogRoutes from "./modules/adminCatalog/adminCatalog.routes";
 
 // Defines application route segments used across middleware and routing.
@@ -180,7 +180,7 @@ function registerApiFeatureRoutes(expressApplication: Express, apiBasePath: stri
   expressApplication.use(`${apiBasePath}/admin/orders`, adminOrderRoutes);
   expressApplication.use(`${apiBasePath}/admin/catalog`, adminCatalogRoutes);
   expressApplication.use(`${apiBasePath}/categories`, categoryRoutes);
-  expressApplication.use(`${apiBasePath}/me`, compareWishlistRoutes);
+  expressApplication.use(`${apiBasePath}/me`, storefrontRoutes);
 }
 
 // Checks whether a frontend build exists and can be served.
@@ -265,3 +265,4 @@ const applicationSetupConfig = buildDefaultSetupConfig();
 const app = createExpressApplication(applicationSetupConfig);
 
 export default app;
+

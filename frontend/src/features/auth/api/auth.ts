@@ -1,8 +1,8 @@
 /**
  * API calls for authentication.
  */
-import api from '@/lib/api/client';
-import type { AuthResponse, LoginCredentials, RegisterData } from '@/types';
+import api from '@/shared/api/client';
+import type { AuthResponse, LoginCredentials, RegisterData } from '@/shared/types';
 
 // Sends login credentials and returns an auth response.
 export async function login(credentials: LoginCredentials): Promise<AuthResponse> {
@@ -15,3 +15,4 @@ export async function register(payload: RegisterData): Promise<AuthResponse> {
   const response = await api.post<AuthResponse>('/auth/register', payload);
   return response.data;
 }
+

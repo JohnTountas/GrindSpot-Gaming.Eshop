@@ -3,9 +3,9 @@
  */
 import { FormEvent, MouseEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShippingAddress } from '@/types';
-import { getApiErrorMessage } from '@/lib/api/error';
-import { showSuccessMessage } from '@/lib/ui/toast';
+import { ShippingAddress } from '@/shared/types';
+import { getApiErrorMessage } from '@/shared/api/error';
+import { showSuccessMessage } from '@/shared/ui/toast';
 import { CheckoutLoading } from '../components/CheckoutLoading';
 import { FOOTER_MESSAGE_EVENT, PAYMENT_OPTIONS } from '../constants';
 import { useCreateOrder } from '../hooks/useCreateOrder';
@@ -781,3 +781,4 @@ function Checkout() {
 }
 
 export default Checkout;
+

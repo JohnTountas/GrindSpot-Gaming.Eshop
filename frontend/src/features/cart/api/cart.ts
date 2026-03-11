@@ -1,8 +1,8 @@
 /**
  * API calls for cart operations.
  */
-import api from '@/lib/api/client';
-import type { Cart } from '@/types';
+import api from '@/shared/api/client';
+import type { Cart } from '@/shared/types';
 
 // Fetches the current user's cart from the API.
 export async function getCart(): Promise<Cart> {
@@ -33,3 +33,4 @@ export async function clearCart() {
   const response = await api.delete('/cart');
   return response.data;
 }
+

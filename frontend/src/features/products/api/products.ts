@@ -1,10 +1,10 @@
 /**
  * API calls for product catalog.
  */
-import api from '@/lib/api/client';
-import type { Category } from '@/types';
+import api from '@/shared/api/client';
+import type { Category } from '@/shared/types';
 import type { CategoryWithCount, ProductsResponse } from '../types';
-import type { Product } from '@/types';
+import type { Product } from '@/shared/types';
 
 // Fetches a filtered/paginated product list.
 export async function getProducts(params: Record<string, unknown>) {
@@ -23,3 +23,4 @@ export async function getCategories() {
   const response = await api.get<CategoryWithCount[] | Category[]>('/categories');
   return response.data as CategoryWithCount[];
 }
+

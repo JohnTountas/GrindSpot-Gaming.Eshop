@@ -4,9 +4,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateCartItem as updateCartItemApi } from '../api/cart';
 import { cartKey } from '../queryKeys';
-import { readGuestCart, updateGuestCartItem } from '@/lib/cart/guestCart';
-import { getApiErrorMessage } from '@/lib/api/error';
-import type { Cart } from '@/types';
+import { readGuestCart, updateGuestCartItem } from '@/shared/cart/guestCart';
+import { getApiErrorMessage } from '@/shared/api/error';
+import type { Cart } from '@/shared/types';
 
 // Options for reacting to cart-item update lifecycle events.
 interface UseUpdateCartItemOptions {
@@ -55,3 +55,4 @@ export function useUpdateCartItem({
     },
   });
 }
+

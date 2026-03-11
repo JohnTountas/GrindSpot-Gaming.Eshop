@@ -5,9 +5,9 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getCart } from '../api/cart';
 import { cartKey } from '../queryKeys';
-import { readGuestCart, subscribeToGuestCart } from '@/lib/cart/guestCart';
-import { isAuthenticated } from '@/lib/auth/session';
-import type { Cart } from '@/types';
+import { readGuestCart, subscribeToGuestCart } from '@/shared/cart/guestCart';
+import { isAuthenticated } from '@/shared/auth/session';
+import type { Cart } from '@/shared/types';
 
 // Provides a unified cart view for authenticated users and guests.
 export function useCartData() {
@@ -38,3 +38,4 @@ export function useCartData() {
     refetch: cartQuery.refetch,
   };
 }
+

@@ -2,9 +2,9 @@
  * Mutation hook for submitting checkout orders.
  */
 import { useMutation } from '@tanstack/react-query';
-import { getApiErrorMessage } from '@/lib/api/error';
+import { getApiErrorMessage } from '@/shared/api/error';
 import { createOrder } from '@/features/orders/api/orders';
-import type { CreateOrderData } from '@/types';
+import type { CreateOrderData } from '@/shared/types';
 
 // Optional callbacks for create-order mutation behavior.
 interface UseCreateOrderOptions {
@@ -24,3 +24,4 @@ export function useCreateOrder(options: UseCreateOrderOptions = {}) {
     },
   });
 }
+

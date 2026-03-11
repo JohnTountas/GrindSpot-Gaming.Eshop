@@ -2,8 +2,8 @@
  * Premium admin dashboard for order control and product spec/review management.
  */
 import { useMemo, useState } from 'react';
-import type { Product } from '@/types';
-import { getApiErrorMessage } from '@/lib/api/error';
+import type { Product } from '@/shared/types';
+import { getApiErrorMessage } from '@/shared/api/error';
 import { OrdersPanel } from '../components/OrdersPanel';
 import { ProductSelector } from '../components/ProductSelector';
 import { ReviewsEditor } from '../components/ReviewsEditor';
@@ -13,7 +13,7 @@ import { useAdminProductContent } from '../hooks/useAdminProductContent';
 import { useAdminProducts } from '../hooks/useAdminProducts';
 import { useUpdateOrderStatus } from '../hooks/useUpdateOrderStatus';
 import type { AdminOrder } from '../types';
-import { formatCurrency } from '../utils/formatCurrency';
+import { formatCurrency } from '@/shared/utils/formatCurrency';
 
 // Fallback arrays used while admin data is loading.
 const EMPTY_ORDERS: AdminOrder[] = [];
@@ -183,3 +183,5 @@ function AdminDashboard() {
 }
 
 export default AdminDashboard;
+
+

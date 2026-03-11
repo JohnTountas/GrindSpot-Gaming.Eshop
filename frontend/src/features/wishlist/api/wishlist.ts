@@ -1,8 +1,8 @@
 /**
  * API calls for wishlist data.
  */
-import api from '@/lib/api/client';
-import type { Product } from '@/types';
+import api from '@/shared/api/client';
+import type { Product } from '@/shared/types';
 
 // Fetches all wishlist products for the current user.
 export async function getWishlistProducts(): Promise<Product[]> {
@@ -15,3 +15,4 @@ export async function addWishlistItemToCart(productId: string) {
   const response = await api.post('/cart/items', { productId, quantity: 1 });
   return response.data;
 }
+

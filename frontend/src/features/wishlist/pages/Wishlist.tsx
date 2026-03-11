@@ -4,15 +4,15 @@
 import { useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { getApiErrorMessage } from '@/lib/api/error';
-import { useWishlist } from '@/lib/gaming/storefront';
-import { showCartAddedToast } from '@/lib/ui/toast';
-import { Product } from '@/types';
+import { getApiErrorMessage } from '@/shared/api/error';
+import { useWishlist } from '@/shared/storefront/storefront';
+import { showCartAddedToast } from '@/shared/ui/toast';
+import { Product } from '@/shared/types';
 import { LoadingWishlist } from '../components/LoadingWishlist';
 import { useWishlistAddToCart } from '../hooks/useWishlistAddToCart';
 import { useWishlistProducts } from '../hooks/useWishlistProducts';
 import { wishlistProductsKey } from '../queryKeys';
-import { formatCurrency } from '../utils/formatCurrency';
+import { formatCurrency } from '@/shared/utils/formatCurrency';
 
 // Combines wishlist state with cart actions and user-facing status feedback.
 function Wishlist() {
@@ -201,3 +201,5 @@ function Wishlist() {
 }
 
 export default Wishlist;
+
+

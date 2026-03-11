@@ -2,7 +2,7 @@
  * Mutations for admin review CRUD operations.
  */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { getApiErrorMessage } from '@/lib/api/error';
+import { getApiErrorMessage } from '@/shared/api/error';
 import { createReview, deleteReview, updateReview } from '../api/adminCatalog';
 import { adminProductContentKey } from '../queryKeys';
 import type { ReviewPayload, ReviewUpdatePayload } from '../types';
@@ -65,3 +65,4 @@ export function useReviewMutations(productId: string, options: UseReviewMutation
     deleteReviewMutation,
   };
 }
+

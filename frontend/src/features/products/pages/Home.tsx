@@ -3,12 +3,12 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Product } from '@/types';
-import { getApiErrorMessage } from '@/lib/api/error';
-import { addGuestCartItem } from '@/lib/cart/guestCart';
-import { isAuthenticated } from '@/lib/auth/session';
-import { showCartAddedToast, showCompareAddedToast, showWishlistAddedToast } from '@/lib/ui/toast';
-import { BRAND_NAME, BRAND_TAGLINE } from '@/lib/brand/identity';
+import { Product } from '@/shared/types';
+import { getApiErrorMessage } from '@/shared/api/error';
+import { addGuestCartItem } from '@/shared/cart/guestCart';
+import { isAuthenticated } from '@/shared/auth/session';
+import { showCartAddedToast, showCompareAddedToast, showWishlistAddedToast } from '@/shared/ui/toast';
+import { BRAND_NAME, BRAND_TAGLINE } from '@/shared/brand/identity';
 import {
   buildTechnicalSpecs,
   buildReviewSnapshot,
@@ -16,13 +16,13 @@ import {
   getProductBrand,
   useCompare,
   useWishlist,
-} from '@/lib/gaming/storefront';
+} from '@/shared/storefront/storefront';
 import { SHOWCASE_CATEGORIES, SORT_OPTIONS } from '../constants';
 import { useCategories } from '../hooks/useCategories';
 import { useProductsCatalog } from '../hooks/useProductsCatalog';
 import { useQuickAddToCart } from '../hooks/useQuickAddToCart';
 import type { CategoryWithCount, SortOption } from '../types';
-import { formatCurrency } from '../utils/formatCurrency';
+import { formatCurrency } from '@/shared/utils/formatCurrency';
 
 // Fallback arrays used while queries are loading or empty.
 const EMPTY_PRODUCTS: Product[] = [];
@@ -728,3 +728,5 @@ function Home() {
 }
 
 export default Home;
+
+

@@ -3,8 +3,8 @@
  */
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BRAND_NAME, BRAND_TAGLINE } from "@/lib/brand/identity";
-import { showSuccessMessage } from "@/lib/ui/toast";
+import { BRAND_NAME, BRAND_TAGLINE } from "@/shared/brand/identity";
+import { showSuccessMessage } from "@/shared/ui/toast";
 import { useLogin } from "../hooks/useLogin";
 import { getUserDisplayName } from "../utils/getUserDisplayName";
 import { persistSession } from "../utils/persistSession";
@@ -128,3 +128,4 @@ function Login() {
 }
 
 export default Login;
+

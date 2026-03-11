@@ -2,8 +2,8 @@
  * Mutation hook for login.
  */
 import { useMutation } from '@tanstack/react-query';
-import { getApiErrorMessage } from '@/lib/api/error';
-import type { AuthResponse, LoginCredentials } from '@/types';
+import { getApiErrorMessage } from '@/shared/api/error';
+import type { AuthResponse, LoginCredentials } from '@/shared/types';
 import { login } from '../api/auth';
 
 // Optional callbacks for login mutation behavior.
@@ -24,3 +24,4 @@ export function useLogin(options: UseLoginOptions = {}) {
     },
   });
 }
+

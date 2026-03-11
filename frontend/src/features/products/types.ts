@@ -1,7 +1,7 @@
 /**
  * Types for product catalog feature.
  */
-import type { Category, Product } from '@/types';
+import type { Category, Product } from '@/shared/types';
 
 // Response shape for product list API calls.
 export interface ProductsResponse {
@@ -21,5 +21,6 @@ export type SortOption = 'featured' | 'rating' | 'price-asc' | 'price-desc' | 'n
 export interface ShowcaseCategory {
   name: string;
   detail: string;
-  slang: string;
+  slang: Category['slang'];
 }
+

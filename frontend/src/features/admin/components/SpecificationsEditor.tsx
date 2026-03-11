@@ -2,7 +2,7 @@
  * Editor for managing product specifications within admin catalog tooling.
  */
 import { FormEvent, useState } from 'react';
-import type { ProductSpecification } from '@/types';
+import type { ProductSpecification } from '@/shared/types';
 import { useSpecificationMutations } from '../hooks/useSpecificationMutations';
 import type { SpecificationUpdatePayload } from '../types';
 
@@ -161,3 +161,4 @@ function SpecificationRow({
     </div>
   );
 }
+

@@ -1,14 +1,7 @@
 /**
  * Formatting helpers for checkout inputs and prices.
  */
-// Formats a number as an EUR currency string.
-export function formatCurrency(value: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 2,
-  }).format(value);
-}
+export { formatCurrency } from '@/shared/utils/formatCurrency';
 
 // Strips non-digit characters from input strings.
 export function digitsOnly(value: string) {

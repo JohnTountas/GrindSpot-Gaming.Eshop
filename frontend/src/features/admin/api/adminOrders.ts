@@ -1,7 +1,7 @@
 /**
  * API calls for admin order management.
  */
-import api from '@/lib/api/client';
+import api from '@/shared/api/client';
 import type { AdminOrder, OrderStatus } from '../types';
 
 // Fetches all orders for admin monitoring.
@@ -15,3 +15,4 @@ export async function updateAdminOrderStatus(orderId: string, status: OrderStatu
   const response = await api.patch(`/admin/orders/${orderId}/status`, { status });
   return response.data;
 }
+

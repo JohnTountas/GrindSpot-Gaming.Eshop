@@ -1,7 +1,7 @@
 /**
  * Builds a readable account name for auth success messaging.
  */
-import type { AuthResponse } from '@/types';
+import type { AuthResponse } from '@/shared/types';
 
 // Derives a friendly display name from profile fields or email.
 export function getUserDisplayName(user: AuthResponse['user']): string {
@@ -17,3 +17,4 @@ export function getUserDisplayName(user: AuthResponse['user']): string {
   const emailPrefix = user.email.split('@')[0]?.trim();
   return emailPrefix || user.email;
 }
+

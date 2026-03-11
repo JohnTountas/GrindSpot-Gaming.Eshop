@@ -4,7 +4,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addCartItem } from '@/features/cart/api/cart';
 import { cartKey } from '@/features/cart/queryKeys';
-import { getApiErrorMessage } from '@/lib/api/error';
+import { getApiErrorMessage } from '@/shared/api/error';
 
 // Options for reacting to quick add-to-cart mutation events.
 interface UseQuickAddToCartOptions {
@@ -36,3 +36,4 @@ export function useQuickAddToCart(options: UseQuickAddToCartOptions = {}) {
     },
   });
 }
+

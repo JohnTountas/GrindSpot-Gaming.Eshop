@@ -3,8 +3,8 @@
  */
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BRAND_NAME } from "@/lib/brand/identity";
-import { showSuccessMessage } from "@/lib/ui/toast";
+import { BRAND_NAME } from "@/shared/brand/identity";
+import { showSuccessMessage } from "@/shared/ui/toast";
 import { useRegister } from "../hooks/useRegister";
 import { getUserDisplayName } from "../utils/getUserDisplayName";
 import { persistSession } from "../utils/persistSession";
@@ -146,3 +146,4 @@ function Register() {
 }
 
 export default Register;
+

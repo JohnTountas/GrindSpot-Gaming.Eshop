@@ -2,7 +2,7 @@
  * Orders summary panel for admin operations.
  */
 import { ORDER_STATUSES, ORDER_STATUS_STYLES } from '../constants';
-import { formatCurrency } from '../utils/formatCurrency';
+import { formatCurrency } from '@/shared/utils/formatCurrency';
 import type { AdminOrder, OrderStatus } from '../types';
 
 // Props required to render the admin orders panel.
@@ -58,3 +58,4 @@ export function OrdersPanel({ orders, onUpdateStatus }: OrdersPanelProps) {
     </section>
   );
 }
+

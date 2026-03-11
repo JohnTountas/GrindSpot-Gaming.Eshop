@@ -17,7 +17,7 @@ export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   {
     name: 'Gaming Desktop PC',
     detail: 'High-performance gaming towers',
-    slang: 'Gaming-desktop-pcs',
+    slang: 'Gaming-desktop-pc',
   },
   { name: 'Keyboards', detail: 'Mechanical and hall-effect input', slang: 'Keyboards' },
   { name: 'Mouse', detail: 'Competitive precision tracking', slang: 'Mouse' },

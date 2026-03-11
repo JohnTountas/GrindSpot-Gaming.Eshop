@@ -396,12 +396,12 @@ async function main() {
         stock: 7,
       },
       {
-        title: "Be-Quiet F-7500 ",
+        title: "Vengeance Roanok V3 MSI",
         description:
           "Matte-black chassis with noise-damped panels, high-efficiency fans, and balanced hardware selection for silent high-fidelity gaming in shared office environments.",
-        price: 2199.0,
-        images: ["/product-images/gaming_pc/be-quiet a7500 gaming.png"],
-        stock: 14,
+        price: 1269.0,
+        images: ["/product-images/gaming_pc/vengeance_roanok_v3.jpeg"],
+        stock: 8,
       },
       {
         title: "Corsair X535 Ultimate",

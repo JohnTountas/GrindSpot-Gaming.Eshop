@@ -1,9 +1,9 @@
 /**
  * API calls for customer orders.
  */
-import api from '@/lib/api/client';
-import type { Order } from '@/types';
-import type { CreateOrderData } from '@/types';
+import api from '@/shared/api/client';
+import type { Order } from '@/shared/types';
+import type { CreateOrderData } from '@/shared/types';
 
 // Fetches the current user's order list.
 export async function getOrders(): Promise<Order[]> {
@@ -22,3 +22,4 @@ export async function createOrder(payload: CreateOrderData) {
   const response = await api.post('/orders', payload);
   return response.data as { id: string };
 }
+

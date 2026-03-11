@@ -159,9 +159,10 @@ grindspot/
 ### Frontend runtime
 
 - [frontend/src/main.tsx](frontend/src/main.tsx) mounts the React application.
-- [frontend/src/App.tsx](frontend/src/App.tsx) defines routing and shared providers.
+- [frontend/src/app/App.tsx](frontend/src/app/App.tsx) composes application providers and the route tree.
+- [frontend/src/app/router/AppRouter.tsx](frontend/src/app/router/AppRouter.tsx) owns top-level routing.
 - Feature pages live under `frontend/src/features/*`, organized by `api/`, `hooks/`, `components/`, `utils/`, and `pages/` with feature-local `constants.ts`, `queryKeys.ts`, and `types.ts` where needed.
-- Shared API/session/storefront helpers live under `frontend/src/lib/*`.
+- Cross-feature code lives under `frontend/src/shared/*`, split into `api/`, `auth/`, `brand/`, `cart/`, `storefront/`, `components/`, `types/`, and `utils/`.
 
 ### Production shape
 

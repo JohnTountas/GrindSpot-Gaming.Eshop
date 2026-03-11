@@ -2,7 +2,7 @@
  * Editor for managing product reviews within admin catalog tooling.
  */
 import { FormEvent, useState } from 'react';
-import type { ProductReview } from '@/types';
+import type { ProductReview } from '@/shared/types';
 import { useReviewMutations } from '../hooks/useReviewMutations';
 import type { ReviewUpdatePayload } from '../types';
 
@@ -196,3 +196,4 @@ function ReviewRow({
     </div>
   );
 }
+

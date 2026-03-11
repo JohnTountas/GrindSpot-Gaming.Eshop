@@ -1,7 +1,7 @@
 /**
  * API calls for admin catalog content management.
  */
-import api from '@/lib/api/client';
+import api from '@/shared/api/client';
 import type {
   AdminProductContent,
   AdminProductsResponse,
@@ -76,3 +76,4 @@ export async function deleteReview(reviewId: string) {
   const response = await api.delete(`/admin/catalog/reviews/${reviewId}`);
   return response.data;
 }
+

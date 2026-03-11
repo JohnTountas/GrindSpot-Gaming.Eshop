@@ -2,7 +2,7 @@
 # The backend serves the built frontend from the same origin so auth cookies,
 # API traffic, and SPA routing stay aligned behind one Fly hostname.
 app = "grindspot-fly-app"
-primary_region = "fra"
+primary_region = "ams"
 
 [build]
   # Build from the repo-root Dockerfile that compiles both apps together.
@@ -38,8 +38,12 @@ primary_region = "fra"
 [http_service]
   # Fly routes public HTTPS traffic to the backend process on port 8080.
   internal_port = 8080
+  protocol = "tcp"
   force_https = true
+  auto_start_machines = true
+  auto_stop_machines = "stop"
+  min_machines_running = 1
 
 [[vm]]
   size = "shared-cpu-1x"
-  memory = "1gb"
+  memory = "512mb"

@@ -50,5 +50,7 @@ Thumbs.db
 docker-compose.override.yml
 
 # Prisma
-backend/prisma/migrations/*
-!backend/prisma/migrations/.gitkeep
+backend/prisma/database.js
+
+# Fly CLI local cache
+.fly-home/

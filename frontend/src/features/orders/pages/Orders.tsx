@@ -3,11 +3,11 @@
  */
 import { CSSProperties, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { getApiErrorMessage } from "@/lib/api/error";
+import { getApiErrorMessage } from "@/shared/api/error";
 import { LoadingOrders } from "../components/LoadingOrders";
 import { ORDER_STATUS_STYLES } from "../constants";
 import { useOrders } from "../hooks/useOrders";
-import { formatCurrency } from "../utils/formatCurrency";
+import { formatCurrency } from "@/shared/utils/formatCurrency";
 import { formatDate } from "../utils/formatDate";
 
 // Shows order history, computed KPIs, and quick actions for each order.
@@ -191,3 +191,5 @@ function Orders() {
 }
 
 export default Orders;
+
+

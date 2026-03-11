@@ -1,7 +1,7 @@
 /**
  * Sidebar selector for admin product management.
  */
-import type { Product } from '@/types';
+import type { Product } from '@/shared/types';
 
 // Props required to render the admin product selector.
 interface ProductSelectorProps {
@@ -47,3 +47,4 @@ export function ProductSelector({
     </aside>
   );
 }
+
