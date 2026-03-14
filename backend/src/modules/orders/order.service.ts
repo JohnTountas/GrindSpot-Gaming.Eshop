@@ -1,5 +1,9 @@
 /**
- * Business logic for order placement, stock checks, and status transitions.
+ * Order domain service.
+ *
+ * This is where checkout turns into persistent order data, including the bits
+ * that are easy to forget under pressure: stock validation, cart cleanup, and
+ * guest-order ownership.
  */
 import { randomUUID } from 'crypto';
 import { hashSync } from 'bcryptjs';
@@ -18,10 +22,12 @@ const guestCheckoutUserEmail = 'guest.checkout@grindspot.local';
 const guestCheckoutPasswordHash = hashSync(randomUUID(), 10);
 
 /**
- * Coordinates order placement and retrieval logic.
+ * Keep controllers thin by letting this service own the transactional rules for
+ * creating and reading orders.
  */
 export class OrderService {
-  // Creates an order from member cart items or guest checkout items in one transaction.
+  // Authenticated and guest checkout share the same order pipeline. The only
+  // real difference is where the line items come from and which user owns them.
   async create(userId: string | undefined, data: CreateOrderDTO) {
     const cartSnapshot = userId ? await this.getCartCheckoutItems(userId) : null;
     const checkoutItems = cartSnapshot?.items ?? (await this.getGuestCheckoutItems(data));
@@ -31,16 +37,16 @@ export class OrderService {
       throw new AppError('Cart is empty', 400);
     }
 
-    // Calculate total
+    // Freeze pricing at purchase time so later catalog edits never rewrite order history.
     const total = checkoutItems.reduce((sum, item) => {
       return sum + Number(item.product.price) * item.quantity;
     }, 0);
 
-    // Create order with transaction
+    // Stock movement, order creation, cart cleanup, and wishlist cleanup belong
+    // in one transaction. If any step fails, we would rather roll back everything.
     const order = await prisma.$transaction(async (tx) => {
       const resolvedUserId = userId ?? (await this.getGuestCheckoutUserId(tx));
 
-      // Create order
       const newOrder = await tx.order.create({
         data: {
           userId: resolvedUserId,
@@ -64,7 +70,8 @@ export class OrderService {
         },
       });
 
-      // Decrement stock
+      // We update stock one product at a time so the inventory history stays
+      // aligned with the order lines we just wrote.
       for (const item of checkoutItems) {
         await tx.product.update({
           where: { id: item.productId },
@@ -100,7 +107,7 @@ export class OrderService {
     return order;
   }
 
-  // Loads the authenticated cart snapshot used to create an order.
+  // Pull a full cart snapshot up front so the transaction works from stable data.
   private async getCartCheckoutItems(userId: string): Promise<{ cartId: string; items: CheckoutItem[] }> {
     const cart = await prisma.cart.findUnique({
       where: { userId },
@@ -129,7 +136,8 @@ export class OrderService {
     };
   }
 
-  // Resolves guest checkout payloads into product-backed order lines.
+  // Guest checkout arrives as bare product IDs and quantities. We normalize that
+  // into the same product-backed shape used by the authenticated cart flow.
   private async getGuestCheckoutItems(data: CreateOrderDTO): Promise<CheckoutItem[]> {
     const guestItemQuantities = new Map<string, number>();
 
@@ -171,7 +179,8 @@ export class OrderService {
     });
   }
 
-  // Creates a dedicated hidden account used to anchor guest checkout orders.
+  // Guest orders still need a user owner in the relational model. We keep one
+  // hidden account for that purpose instead of making the schema branch by actor type.
   private async getGuestCheckoutUserId(tx: Prisma.TransactionClient): Promise<string> {
     const guestCheckoutUser = await tx.user.upsert({
       where: {
@@ -192,7 +201,7 @@ export class OrderService {
     return guestCheckoutUser.id;
   }
 
-  // Lists orders for a specific user in reverse chronological order.
+  // Customer order history should read naturally, newest first.
   async findAll(userId: string) {
     const orders = await prisma.order.findMany({
       where: { userId },
@@ -211,7 +220,8 @@ export class OrderService {
     return orders;
   }
 
-  // Finds one user-owned order with related product and category metadata.
+  // Order detail reads are owner-scoped here so controllers don't need to
+  // duplicate access rules.
   async findById(orderId: string, userId: string) {
     const order = await prisma.order.findFirst({
       where: {
@@ -238,7 +248,8 @@ export class OrderService {
     return order;
   }
 
-  // Lists orders for admin views with optional status filtering.
+  // Admin views can fan out across the whole storefront, with an optional
+  // status filter for operational queues.
   async findAllOrders(filters?: { status?: OrderStatus }) {
     const where: Prisma.OrderWhereInput = {};
 
@@ -271,7 +282,8 @@ export class OrderService {
     return orders;
   }
 
-  // Updates order status for admin order-lifecycle workflows.
+  // Status changes stay intentionally small here. If the lifecycle grows more
+  // complex later, this is the seam to harden with transition rules.
   async updateStatus(orderId: string, data: UpdateOrderStatusDTO) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },

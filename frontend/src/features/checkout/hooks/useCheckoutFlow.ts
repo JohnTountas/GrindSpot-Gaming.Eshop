@@ -1,5 +1,8 @@
 /**
- * Feature hook that owns checkout state, validation, and order submission.
+ * Checkout workflow hook.
+ *
+ * It keeps form state, payment validation, cache updates, and post-purchase
+ * navigation in one place so the page component can stay mostly declarative.
  */
 import { useQueryClient } from '@tanstack/react-query';
 import { FormEvent, MouseEvent, useState } from 'react';
@@ -56,7 +59,6 @@ interface UseCheckoutFlowOptions {
 
 type CheckoutFooterMessage = 'termsOfService' | 'privacySecurity';
 
-// Encapsulates the mutable form state and submission workflow for checkout.
 export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -78,6 +80,8 @@ export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
       if (authed) {
         const purchasedProductIds = new Set(order.items.map((item) => item.productId));
 
+        // Update the obvious client-side caches immediately so the checkout flow
+        // feels completed before the background refetches finish.
         queryClient.setQueryData<Cart | undefined>(cartKey, (currentCart) => {
           if (!currentCart) {
             return currentCart;
@@ -128,6 +132,8 @@ export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
         await queryClient.invalidateQueries({ queryKey: ordersKey });
       }
 
+      // The toast gives both guest and signed-in flows the same success language,
+      // even though they branch to different destinations afterward.
       showSuccessMessage({
         title: 'Order placed successfully',
         message: `Thank you for choosing GrindSpot. Your order is confirmed and our team is preparing it for fast dispatch. Payment authorized with ${selectedPaymentOption.label}.`,
@@ -169,6 +175,8 @@ export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
   }
 
   function validatePaymentStep() {
+    // We validate in the same order the UI asks for input, so the first error
+    // the customer sees is the next actionable thing to fix.
     if (!isShippingComplete) {
       return 'Complete all shipping fields before payment confirmation.';
     }
@@ -222,6 +230,8 @@ export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
       return;
     }
 
+    // We generate a deterministic fake payment intent for this demo flow so
+    // order creation still has a payment-shaped identifier attached to it.
     const paymentIntentId = buildPaymentIntentId(
       selectedPaymentMethod,
       getPaymentFingerprintSource({
@@ -232,6 +242,8 @@ export function useCheckoutFlow({ authed, items }: UseCheckoutFlowOptions) {
       })
     );
 
+    // Drop CVV from local React state as soon as the form is submitted. Even in
+    // a demo app, we should not keep sensitive fields around longer than needed.
     setCardDetails((current) => ({ ...current, cvv: '' }));
     createOrderMutation.mutate({
       shippingAddress: form,

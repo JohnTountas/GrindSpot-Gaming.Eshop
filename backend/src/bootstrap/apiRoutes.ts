@@ -7,7 +7,8 @@ import categoryRoutes from '../modules/categories/category.routes';
 import storefrontRoutes from '../modules/storefront/storefront.routes';
 import adminCatalogRoutes from '../modules/adminCatalog/adminCatalog.routes';
 
-// Mounts all feature routers underneath the shared API base path.
+// Keep route registration flat and explicit here. It makes the public surface
+// area easy to audit without hunting through bootstrap code.
 export function registerApiFeatureRoutes(expressApplication: Express, apiBasePath: string): void {
   expressApplication.use(`${apiBasePath}/auth`, authRoutes);
   expressApplication.use(`${apiBasePath}/products`, productRoutes);

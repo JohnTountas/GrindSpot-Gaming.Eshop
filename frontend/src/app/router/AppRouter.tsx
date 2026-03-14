@@ -1,5 +1,8 @@
 /**
- * Top-level frontend route tree.
+ * Frontend route map.
+ *
+ * Keep this file boring: it should answer "what pages exist?" at a glance and
+ * leave page-specific behavior inside the features themselves.
  */
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AdminDashboard from '@/features/admin/pages/AdminDashboard';
@@ -21,6 +24,7 @@ function AppRouter() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
+          {/* Public storefront routes. */}
           <Route index element={<Home />} />
           <Route path="products/:id" element={<ProductDetail />} />
           <Route path="cart" element={<Cart />} />
@@ -28,6 +32,8 @@ function AppRouter() {
           <Route path="register" element={<Register />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="checkout/success/:id" element={<GuestOrderConfirmation />} />
+
+          {/* Signed-in customer routes. */}
           <Route
             path="orders"
             element={
@@ -52,6 +58,8 @@ function AppRouter() {
               </ProtectedRoute>
             }
           />
+
+          {/* Admin-only tooling stays under its own branch. */}
           <Route
             path="admin/*"
             element={
@@ -60,6 +68,8 @@ function AppRouter() {
               </ProtectedRoute>
             }
           />
+
+          {/* Unknown client routes collapse back to the storefront entry point. */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

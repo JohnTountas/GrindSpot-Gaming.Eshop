@@ -1,5 +1,8 @@
 /**
- * Backend process entrypoint that starts the HTTP server and logs startup metadata.
+ * Process entrypoint for the API.
+ *
+ * Keep startup concerns here: connect to Postgres, bind the HTTP server, and
+ * leave the Express composition itself to `app.ts`.
  */
 import { Express } from "express";
 import app from "./app";
@@ -12,12 +15,12 @@ const LOCAL_BASE_URL = "http://localhost";
 const DOCS_PATH = "/docs";
 const DEFAULT_PORT_RETRY_ATTEMPTS = 1;
 
-// Resolves the effective startup port using configuration and fallback values.
+// Prefer configured runtime values, but keep one predictable fallback for local recovery.
 function resolveServerPort(configuredPort: number | undefined, fallbackPort: number): number {
   return configuredPort || fallbackPort;
 }
 
-// Builds startup status lines for operational visibility.
+// Centralize startup logging so every successful boot prints the same footprint.
 function buildStartupMessages(serverPort: number, environmentName: string): string[] {
   return [
     `Server running on port: ${serverPort}`,
@@ -26,14 +29,14 @@ function buildStartupMessages(serverPort: number, environmentName: string): stri
   ];
 }
 
-// Logs startup diagnostics after successful server bootstrap.
+// Emit startup lines together once we know the process is actually serving traffic.
 function logStartupMessages(messages: string[]): void {
   messages.forEach((message) => {
     console.log(message);
   });
 }
 
-// Resolves and sanitizes how many port retry attempts are allowed.
+// The retry count is env-driven so local dev can recover from stale listeners without code changes.
 function resolvePortRetryAttempts(value: string | undefined, fallback: number): number {
   const parsed = Number(value);
   if (Number.isFinite(parsed) && parsed > 0) {
@@ -42,7 +45,8 @@ function resolvePortRetryAttempts(value: string | undefined, fallback: number): 
   return fallback;
 }
 
-// Attempts to bind the HTTP server to a single candidate port.
+// Try one candidate port at a time so we can recover from "port already in use"
+// without masking other boot failures.
 function tryStartServerOnPort(
   expressApp: Express,
   serverPort: number,
@@ -68,7 +72,8 @@ function tryStartServerOnPort(
   });
 }
 
-// Starts the HTTP server with retry handling across candidate ports.
+// Walk the configured retry window linearly. Keeping this simple makes startup
+// behavior easier to reason about in dev and in container logs.
 async function startServer(
   expressApp: Express,
   preferredPort: number,
@@ -104,20 +109,22 @@ async function startServer(
   );
 }
 
-// Resolves runtime configuration and database retry behavior.
+// These values are read once at process start. If they are wrong, we want a loud
+// boot failure rather than partial runtime drift.
 const serverPort = resolveServerPort(config.port, DEFAULT_PORT);
 const serverHost = DEFAULT_HOST;
 const DB_CONNECT_MAX_RETRIES = parseInt(process.env.DB_CONNECT_MAX_RETRIES || "10", 10);
 const DB_CONNECT_RETRY_DELAY_MS = parseInt(process.env.DB_CONNECT_RETRY_DELAY_MS || "2000", 10);
 
-// Delays execution for the requested retry interval.
+// Small wrapper to keep retry code readable.
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
 }
 
-// Redacts sensitive database URL credentials before logging.
+// If startup fails, logs should still help us diagnose the target host without
+// leaking credentials into CI or provider logs.
 function redactDatabaseUrl(url: string): string {
   if (!url) {
     return "(missing DATABASE_URL)";
@@ -134,7 +141,8 @@ function redactDatabaseUrl(url: string): string {
   }
 }
 
-// Retries database connectivity until success or retry budget exhaustion.
+// Containers can come up before Postgres is ready. Retrying here avoids turning
+// a short-lived infrastructure race into a failed release.
 async function ensureDatabaseConnection(): Promise<void> {
   for (let attempt = 1; attempt <= DB_CONNECT_MAX_RETRIES; attempt += 1) {
     try {
@@ -159,7 +167,8 @@ async function ensureDatabaseConnection(): Promise<void> {
   }
 }
 
-// Coordinates database readiness and HTTP server startup.
+// Boot order matters: if the database is unavailable, fail before binding the
+// port so health checks never see a half-ready API.
 async function bootstrap(): Promise<void> {
   await ensureDatabaseConnection();
   await startServer(app, serverPort, config.nodeEnv, serverHost);

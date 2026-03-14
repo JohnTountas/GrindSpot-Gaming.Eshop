@@ -13,6 +13,8 @@
     "migrate:deploy": "node scripts/prisma-cli.js migrate deploy",
     "database": "npx tsx prisma/database.ts",
     "studio": "node scripts/prisma-studio.js",
+    "studio:production": "node scripts/prisma-studio-production.js",
+    "studio:production:open": "node scripts/prisma-studio-production.js grindspot-fly-app 5555 default",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "type-check": "tsc --noEmit",

@@ -1,5 +1,8 @@
 /**
- * Shared application shell that wraps every route with global navigation and footer UI.
+ * Shared application shell.
+ *
+ * This is the one place where global UI concerns meet: header state, footer
+ * messaging, toast host, guest-cart sync, and the route outlet.
  */
 import { useQueryClient } from '@tanstack/react-query';
 import { Outlet, useNavigate } from 'react-router-dom';
@@ -30,14 +33,18 @@ function Layout() {
   const isHeaderVisible = useHeaderVisibility();
   const { activeMessage, openFooterMessage, closeFooterMessage } = useFooterMessageDialog();
 
+  // Run this once at the shell level so every authenticated route benefits from
+  // the same guest-to-account cart handoff.
   useGuestCartSync(authed, queryClient);
 
-  // Returns the viewport to the top before route transitions that should feel like page changes.
+  // Some transitions behave like full page changes even inside the SPA. Resetting
+  // scroll here keeps that experience predictable.
   function scrollToPageStart() {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }
 
-  // Clears local auth state and redirects to the login page with user-facing confirmation.
+  // Logout is handled optimistically on the client because all auth state lives
+  // in local storage plus refresh cookies managed elsewhere.
   function handleLogout() {
     const logoutUsername = displayName || user?.email?.split('@')[0]?.trim() || user?.email || 'User';
 
@@ -61,6 +68,8 @@ function Layout() {
         Skip to main content
       </a>
 
+      {/* Decorative background layers live here so feature pages do not need to
+          know anything about the global visual treatment. */}
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -left-24 -top-36 h-96 w-96 animate-float-slow rounded-full bg-primary-800/32 blur-3xl" />
         <div className="absolute right-[-6rem] top-28 h-[26rem] w-[26rem] animate-float-slow rounded-full bg-accent-800/20 blur-3xl [animation-delay:1.6s]" />
