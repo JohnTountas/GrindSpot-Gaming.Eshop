@@ -16,11 +16,11 @@ export function OrderSummaryCard({ totals }: OrderSummaryCardProps) {
       <h2 className="text-xl font-semibold text-primary-900">Order summary</h2>
       <div className="mt-4 space-y-2 text-sm text-primary-700">
         <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
-          <p>Subtotal</p>
+          <p>Subtotal:</p>
           <p className="font-semibold text-primary-900">{formatCurrency(totals.subtotal)}</p>
         </div>
         <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
-          <p>Estimated Shipping</p>
+          <p>Estimated Shipping:</p>
           <p className="font-semibold text-primary-900">
             {formatCurrency(totals.shippingEstimate)}
           </p>
