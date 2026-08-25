@@ -24,8 +24,8 @@ function createExpressApplication() {
   const setupConfig = buildApplicationSetupConfig();
   const expressApplication = express();
 
-  // Fly sits in front of the app, so trust a single proxy hop for cookies,
-  // secure headers, and rate-limiting decisions.
+  // Trust a single proxy hop so hosted environments can forward the original
+  // protocol and client details for cookies, security headers, and limits.
   expressApplication.set('trust proxy', 1);
 
   registerCoreMiddleware(

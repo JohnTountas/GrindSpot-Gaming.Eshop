@@ -9,7 +9,6 @@
     "dev:backend": "node scripts/run-backend-dev.js",
     "dev:stop": "node scripts/stop-dev-processes.js",
     "db:prepare": "node scripts/prepare-backend-db.js",
-    "migrate:fly:export": "node scripts/export-fly-db.js",
     "migrate:db:import": "node scripts/import-postgres-sql.js",
     "migrate:data:import": "node backend/scripts/import-production-export.js",
     "docker:up": "docker compose up --build",

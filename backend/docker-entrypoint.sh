@@ -42,7 +42,7 @@ if [ "${RUN_MIGRATIONS_ON_STARTUP:-true}" = "true" ]; then
     MIGRATE_ATTEMPT=$((MIGRATE_ATTEMPT + 1))
   done
 else
-  # Fly uses a release command for migrations, so startup should stay lightweight.
+  # Some hosts apply migrations separately, so startup can stay lightweight.
   echo "RUN_MIGRATIONS_ON_STARTUP is false. Skipping startup migrations."
 fi
 

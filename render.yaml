@@ -10,7 +10,7 @@ services:
     buildCommand: npm ci --include=dev && npx prisma generate && npm run build
     startCommand: sh docker-entrypoint.sh
     healthCheckPath: /health
-    autoDeployTrigger: commit
+    autoDeployTrigger: off
     previews:
       generation: off
     envVars:

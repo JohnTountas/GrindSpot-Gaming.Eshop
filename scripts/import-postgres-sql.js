@@ -3,7 +3,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const repoRoot = path.resolve(__dirname, "..");
-const defaultInputFile = path.join(repoRoot, "backups", "fly-production.sql");
+const defaultInputFile = path.join(repoRoot, "backups", "production-import.sql");
 const inputFile = process.argv[2]?.trim() || process.env.DB_IMPORT_FILE?.trim() || defaultInputFile;
 const targetDatabaseUrl =
   process.env.TARGET_DATABASE_URL?.trim() ||

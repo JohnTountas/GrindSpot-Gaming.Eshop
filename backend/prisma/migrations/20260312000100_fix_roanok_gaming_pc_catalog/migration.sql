@@ -1,5 +1,5 @@
 -- Correct the existing Gaming Desktop PC catalog row that was previously seeded
--- as Be-Quiet F-7500 so Fly deployments update the live database as well.
+-- as Be-Quiet F-7500 so production data stays aligned with the catalog fix.
 WITH target_products AS (
     SELECT "id"
     FROM "Product"
