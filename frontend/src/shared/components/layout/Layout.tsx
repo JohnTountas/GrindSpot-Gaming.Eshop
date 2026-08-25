@@ -12,6 +12,7 @@ import { useCartData } from "@/features/cart/hooks/useCartData";
 import ToastHost from "@/shared/components/feedback/ToastHost";
 import { useWishlist } from "@/shared/shopping";
 import { showSuccessMessage } from "@/shared/ui/toast";
+import BackendWarmupOverlay from "@/shared/components/feedback/BackendWarmupOverlay";
 import LayoutFooter from "./components/LayoutFooter";
 import LayoutHeader from "./components/LayoutHeader";
 import FooterMessageModal from "./components/FooterMessageModal";
@@ -63,6 +64,7 @@ function Layout() {
 
   return (
     <div className="relative isolate min-h-screen overflow-x-clip bg-grain-gradient">
+      <BackendWarmupOverlay />
       <ToastHost />
       <a
         href="#main-content"

@@ -4,9 +4,21 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 
-function createCorsOptions(allowedCorsOrigin: string): CorsOptions {
+function createCorsOptions(allowedCorsOrigins: string[]): CorsOptions {
   return {
-    origin: allowedCorsOrigin,
+    origin(requestOrigin, callback) {
+      if (!requestOrigin) {
+        callback(null, true);
+        return;
+      }
+
+      if (allowedCorsOrigins.includes(requestOrigin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`Origin ${requestOrigin} is not allowed by CORS.`));
+    },
     credentials: true,
   };
 }
@@ -14,11 +26,11 @@ function createCorsOptions(allowedCorsOrigin: string): CorsOptions {
 // Applies the shared middleware stack used by both local and deployed environments.
 export function registerCoreMiddleware(
   expressApplication: Express,
-  allowedCorsOrigin: string,
+  allowedCorsOrigins: string[],
   runningEnvironment: string
 ): void {
   expressApplication.use(helmet());
-  expressApplication.use(cors(createCorsOptions(allowedCorsOrigin)));
+  expressApplication.use(cors(createCorsOptions(allowedCorsOrigins)));
   expressApplication.use(express.json());
   expressApplication.use(express.urlencoded({ extended: true }));
   expressApplication.use(cookieParser());

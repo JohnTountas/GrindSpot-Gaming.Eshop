@@ -30,7 +30,7 @@ function createExpressApplication() {
 
   registerCoreMiddleware(
     expressApplication,
-    setupConfig.allowedCorsOrigin,
+    setupConfig.allowedCorsOrigins,
     setupConfig.runningEnvironment
   );
   registerUploadStaticRoute(

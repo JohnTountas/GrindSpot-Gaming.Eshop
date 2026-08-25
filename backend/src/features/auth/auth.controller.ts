@@ -7,6 +7,7 @@ import { asyncHandler } from '../../middleware/error.middleware';
 import { AuthRequest } from '../../middleware/auth.middleware';
 import { verifyRefreshToken, generateToken } from '../../utils/jwt';
 import { AppError } from '../../middleware/error.middleware';
+import { config } from '../../config/env';
 
 // Service instance used by auth controllers.
 const authService = new AuthService();
@@ -14,15 +15,15 @@ const authService = new AuthService();
 // Cookie settings for refresh token persistence.
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict' as const,
+  secure: config.authCookies.secure,
+  sameSite: config.authCookies.sameSite,
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
 const CLEAR_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict' as const,
+  secure: config.authCookies.secure,
+  sameSite: config.authCookies.sameSite,
   path: '/',
 };
 

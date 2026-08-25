@@ -54,3 +54,13 @@ backend/prisma/database.js
 
 # Fly CLI local cache
 .fly-home/
+
+# Database migration artifacts
+backups/
+supabase/.temp/
+
+# Local CLI/tool downloads
+tools/
+
+.vercel
+.env*

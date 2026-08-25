@@ -3,11 +3,15 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev": "concurrently -k -n backend,frontend \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev": "node scripts/check-dev-ports.js && concurrently -k -n backend,frontend \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:db": "node scripts/ensure-postgres.js",
     "dev:frontend": "node scripts/run-frontend-dev.js",
     "dev:backend": "node scripts/run-backend-dev.js",
+    "dev:stop": "node scripts/stop-dev-processes.js",
     "db:prepare": "node scripts/prepare-backend-db.js",
+    "migrate:fly:export": "node scripts/export-fly-db.js",
+    "migrate:db:import": "node scripts/import-postgres-sql.js",
+    "migrate:data:import": "node backend/scripts/import-production-export.js",
     "docker:up": "docker compose up --build",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f app"

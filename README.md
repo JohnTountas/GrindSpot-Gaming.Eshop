@@ -255,9 +255,29 @@ That starts:
 - frontend Vite dev server on `http://localhost:3000`
 - backend API on `http://localhost:5000`
 - Swagger docs on `http://localhost:5000/docs`
+- PostgreSQL on `localhost:5432`
+
+Recommended local dev sequence:
+
+```powershell
+npm install
+npm run dev:db
+npm run db:prepare
+npm run dev
+```
+
+If an older local session is still running, `npm run dev` now fails fast with a
+clear port-conflict message instead of silently colliding with stale processes.
+In that case run:
+
+```powershell
+npm run dev:stop
+npm run dev
+```
 
 Useful root commands:
 
+- `npm run dev:stop`
 - `npm run docker:up`
 - `npm run docker:down`
 - `npm run docker:logs`
@@ -265,6 +285,42 @@ Useful root commands:
 - `npm run dev:backend`
 - `npm run dev:db`
 - `npm run db:prepare`
+- `npm run dev`
+
+What each root script does:
+
+- `npm run dev:db`: starts or reuses the local Postgres Docker container
+- `npm run db:prepare`: generates Prisma Client, applies migrations, and seeds when needed
+- `npm run dev`: starts backend plus Vite frontend for daily development
+- `npm run dev:stop`: stops stale GrindSpot local dev processes on ports `3000` and `5000`
+- `npm run docker:up`: builds and starts the full Docker stack
+- `npm run docker:down`: stops the Docker stack
+- `npm run docker:logs`: tails Docker app logs
+
+## Deployment Paths
+
+Current live production is still documented on Fly.io:
+
+- `https://grindspot-fly-app.fly.dev/`
+
+The repository is also prepared for a split-host migration path:
+
+- Vercel for the frontend
+- Render for the backend
+- Supabase for PostgreSQL
+
+See the full migration guide here:
+
+- [MIGRATE_TO_VERCEL_RENDER_SUPABASE.md](MIGRATE_TO_VERCEL_RENDER_SUPABASE.md)
+
+That guide covers:
+
+- exporting the Fly/Postgres database
+- restoring it into Supabase
+- deploying the backend to Render
+- deploying the frontend to Vercel
+- configuring cross-origin cookies and CORS correctly
+- enabling the branded cold-start overlay for Render free-tier wakeups
 
 ## Architecture Summary
 
@@ -288,6 +344,7 @@ Useful root commands:
 - In production, the backend serves the compiled SPA from `FRONTEND_DIST_PATH`.
 - Frontend and backend intentionally share the same origin so refresh-token cookies work correctly.
 - Local Docker Compose follows the same shape with one app container plus Postgres.
+- The repository also supports a split-host deployment model for `Vercel + Render + Supabase`.
 
 ### Auth
 
@@ -390,6 +447,7 @@ Supported environment controls:
 - The backend trusts a single proxy layer in production for Fly.
 - On Fly MPG, use the pooled `DATABASE_URL` for app traffic and the direct `DIRECT_URL` for migrations.
 - Production database credentials must never point to the Compose hostname `postgres:5432`.
+- For split frontend/backend hosting, configure `CORS_ORIGIN`, `AUTH_COOKIE_SAME_SITE=none`, and `AUTH_COOKIE_SECURE=true`.
 
 ## Current Limitations
 

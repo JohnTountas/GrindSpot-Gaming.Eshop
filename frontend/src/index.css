@@ -225,6 +225,96 @@
     background-color: rgba(11, 19, 36, 0.72);
     color: #1df2ff !important;
   }
+
+  .backend-warmup-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+    background:
+      radial-gradient(circle at 18% 18%, rgba(46, 123, 255, 0.24), transparent 32%),
+      radial-gradient(circle at 82% 24%, rgba(207, 102, 255, 0.18), transparent 28%),
+      radial-gradient(circle at 50% 100%, rgba(29, 242, 255, 0.12), transparent 40%),
+      linear-gradient(180deg, rgba(3, 7, 16, 0.92), rgba(6, 9, 19, 0.97));
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  .backend-warmup-panel {
+    display: grid;
+    gap: 1rem;
+    justify-items: center;
+    width: min(100%, 42rem);
+    padding: 2rem;
+    border: 1px solid rgba(97, 129, 201, 0.36);
+    border-radius: 2rem;
+    text-align: center;
+    background:
+      linear-gradient(155deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 42%, rgba(22, 36, 66, 0.18) 100%),
+      rgba(8, 13, 25, 0.9);
+    box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 40px rgba(46, 123, 255, 0.14);
+  }
+
+  .backend-warmup-emblem {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 7.5rem;
+    height: 7.5rem;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(13, 20, 39, 0.96) 0%, rgba(5, 9, 18, 0.98) 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+      0 0 30px rgba(29, 242, 255, 0.12);
+  }
+
+  .backend-warmup-ring {
+    position: absolute;
+    border-radius: 9999px;
+    border: 1px solid rgba(29, 242, 255, 0.34);
+  }
+
+  .backend-warmup-ring--outer {
+    inset: -0.4rem;
+    border-top-color: rgba(29, 242, 255, 0.95);
+    border-right-color: rgba(46, 123, 255, 0.4);
+    animation: spin 2.6s linear infinite;
+  }
+
+  .backend-warmup-ring--inner {
+    inset: 0.55rem;
+    border-bottom-color: rgba(207, 102, 255, 0.72);
+    border-left-color: rgba(29, 242, 255, 0.26);
+    animation: spin 1.8s linear infinite reverse;
+  }
+
+  .backend-warmup-dots {
+    display: inline-flex;
+    gap: 0.55rem;
+    margin-top: 0.35rem;
+  }
+
+  .backend-warmup-dots span {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, rgba(29, 242, 255, 1), rgba(46, 123, 255, 1));
+    box-shadow: 0 0 16px rgba(29, 242, 255, 0.42);
+    animation: backend-warmup-bounce 0.9s ease-in-out infinite;
+  }
+
+  .backend-warmup-dots span:nth-child(2) {
+    animation-delay: 0.12s;
+  }
+
+  .backend-warmup-dots span:nth-child(3) {
+    animation-delay: 0.24s;
+  }
 }
 
 @layer utilities {
@@ -259,5 +349,24 @@
 
   .loupe-frame.is-loupe-active .product-image-zoom {
     transform: none !important;
+  }
+
+  .backend-warmup-ring,
+  .backend-warmup-dots span {
+    animation: none !important;
+  }
+}
+
+@keyframes backend-warmup-bounce {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0) scale(0.92);
+    opacity: 0.48;
+  }
+
+  40% {
+    transform: translateY(-4px) scale(1);
+    opacity: 1;
   }
 }

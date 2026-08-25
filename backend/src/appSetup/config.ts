@@ -13,7 +13,7 @@ export const directoryPaths = {
 } as const;
 
 export interface ApplicationSetupConfig {
-  allowedCorsOrigin: string;
+  allowedCorsOrigins: string[];
   runningEnvironment: string;
   serverPort: number;
   routePaths: typeof routePaths;
@@ -23,7 +23,7 @@ export interface ApplicationSetupConfig {
 // Resolves the runtime settings needed to assemble the Express application.
 export function buildApplicationSetupConfig(): ApplicationSetupConfig {
   return {
-    allowedCorsOrigin: envConfig.corsOrigin,
+    allowedCorsOrigins: envConfig.corsOrigins,
     runningEnvironment: envConfig.nodeEnv,
     serverPort: envConfig.port,
     routePaths,

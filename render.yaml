@@ -1,0 +1,50 @@
+services:
+  - name: grindspot-backend
+    type: web
+    runtime: node
+    plan: free
+    region: frankfurt
+    repo: https://github.com/JohnTountas/GrindSpot-Gaming.Eshop
+    branch: main
+    rootDir: backend
+    buildCommand: npm ci --include=dev && npx prisma generate && npm run build
+    startCommand: sh docker-entrypoint.sh
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    previews:
+      generation: off
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: FRONTEND_DIST_PATH
+        value: ""
+      - key: CORS_ORIGIN
+        sync: false
+      - key: AUTH_COOKIE_SAME_SITE
+        value: none
+      - key: AUTH_COOKIE_SECURE
+        value: "true"
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 7d
+      - key: AUTO_SEED
+        value: "false"
+      - key: RUN_MIGRATIONS_ON_STARTUP
+        value: "false"
+      - key: UPLOAD_DIR
+        value: uploads
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
