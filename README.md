@@ -214,6 +214,58 @@ grindspot/
 Generated directories like `node_modules/` and build outputs like `dist/` are intentionally omitted
 from the tree above.
 
+## Local Development
+
+Best full-project local run:
+
+```powershell
+docker compose up --build
+```
+
+Or:
+
+```powershell
+npm run docker:up
+```
+
+That starts:
+
+- the full app on `http://localhost:3000`
+- Swagger docs on `http://localhost:3000/docs`
+- the health endpoint on `http://localhost:3000/health`
+- PostgreSQL on `localhost:5432`
+
+This is the recommended setup because it matches production more closely:
+
+- one Postgres container
+- one full-stack app container built from the root [Dockerfile](Dockerfile)
+- same-origin frontend and API traffic through one app port
+
+Fastest code-iteration workflow:
+
+```powershell
+npm install
+npm run dev:db
+npm run db:prepare
+npm run dev
+```
+
+That starts:
+
+- frontend Vite dev server on `http://localhost:3000`
+- backend API on `http://localhost:5000`
+- Swagger docs on `http://localhost:5000/docs`
+
+Useful root commands:
+
+- `npm run docker:up`
+- `npm run docker:down`
+- `npm run docker:logs`
+- `npm run dev:frontend`
+- `npm run dev:backend`
+- `npm run dev:db`
+- `npm run db:prepare`
+
 ## Architecture Summary
 
 ### Backend runtime
@@ -235,6 +287,7 @@ from the tree above.
 - The root [Dockerfile](Dockerfile) builds frontend and backend together.
 - In production, the backend serves the compiled SPA from `FRONTEND_DIST_PATH`.
 - Frontend and backend intentionally share the same origin so refresh-token cookies work correctly.
+- Local Docker Compose follows the same shape with one app container plus Postgres.
 
 ### Auth
 

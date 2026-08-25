@@ -55,7 +55,9 @@ COPY --from=backend-builder /app/backend/scripts ./scripts
 COPY --from=backend-builder /app/backend/docker-entrypoint.sh ./docker-entrypoint.sh
 COPY --from=frontend-builder /app/frontend/dist ./frontend-dist
 
-RUN chmod +x ./docker-entrypoint.sh && mkdir -p ./uploads ./logs
+RUN sed -i 's/\r$//' ./docker-entrypoint.sh \
+  && chmod +x ./docker-entrypoint.sh \
+  && mkdir -p ./uploads ./logs
 
 # Backend serves both API traffic and the pre-built SPA from the same process.
 ENV NODE_ENV=production

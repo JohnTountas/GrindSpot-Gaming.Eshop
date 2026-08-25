@@ -1,7 +1,6 @@
-# Local orchestration for postgres, backend, and frontend services.
+# Recommended local runtime: one Postgres container plus one full-stack app container.
 services:
   postgres:
-    # Local development database that mirrors the production Postgres engine family.
     image: postgres:16-alpine
     container_name: grindspot-Database
     restart: unless-stopped
@@ -19,54 +18,45 @@ services:
       timeout: 5s
       retries: 5
 
-  backend:
+  app:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
-    container_name: grindspot-Backend
+      args:
+        VITE_API_URL: /api
+        VITE_STRIPE_PUBLIC_KEY: pk_test_grindspot_publishable_key_change_me
+    container_name: grindspot-App
     restart: unless-stopped
     environment:
-      # Compose service names are resolvable as hostnames inside the Docker network.
       DATABASE_URL: postgresql://grindspot:grindspot_password@postgres:5432/grindspot_DB
       DIRECT_URL: postgresql://grindspot:grindspot_password@postgres:5432/grindspot_DB
       JWT_SECRET: grindspot-access-token-signing-key-change-me
       JWT_REFRESH_SECRET: grindspot-refresh-token-signing-key-change-me
       JWT_EXPIRES_IN: 15m
       JWT_REFRESH_EXPIRES_IN: 7d
-      PORT: 5000
-      NODE_ENV: development
+      PORT: 8080
+      NODE_ENV: production
+      FRONTEND_DIST_PATH: /app/frontend-dist
+      CORS_ORIGIN: http://localhost:3000
       AUTO_SEED: "true"
-      # Local demo accounts are intentional here; production uses Fly secrets instead.
+      RUN_MIGRATIONS_ON_STARTUP: "true"
       SEED_ADMIN_EMAIL: admin@grindspot.com
       SEED_ADMIN_PASSWORD: Adminadmin123
       SEED_USER_EMAIL: user@grindspot.com
       SEED_USER_PASSWORD: user123
-      CORS_ORIGIN: http://localhost:3000
       STRIPE_SECRET_KEY: sk_test_grindspot_secret_key_change_me
       STRIPE_WEBHOOK_SECRET: whsec_grindspot_webhook_secret_change_me
+      UPLOAD_DIR: uploads
     ports:
-      - "5000:5000"
+      - "3000:8080"
     volumes:
-      # Persist uploaded assets outside the container while iterating locally.
-      - ./backend/uploads:/app/uploads
+      - app_uploads:/app/uploads
+      - app_logs:/app/logs
     depends_on:
       postgres:
         condition: service_healthy
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        # Frontend points at the backend container published on localhost:5000.
-        VITE_API_URL: http://localhost:5000/api
-        VITE_STRIPE_PUBLIC_KEY: pk_test_grindspot_publishable_key_change_me
-    container_name: grindspot-Frontend
-    restart: unless-stopped
-    ports:
-      - "3000:80"
-    depends_on:
-      - backend
-
 volumes:
   postgres_data:
+  app_uploads:
+  app_logs:
