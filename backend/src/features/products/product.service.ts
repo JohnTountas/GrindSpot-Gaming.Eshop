@@ -17,6 +17,9 @@ interface ListProductsParams {
   limit?: number | string;
 }
 
+type ProductSortField = 'createdAt' | 'price' | 'title';
+type SortDirection = 'asc' | 'desc';
+
 // Parses optional text query values into normalized strings.
 function parseOptionalText(value: string | string[] | undefined) {
   if (typeof value === 'string') {
@@ -104,9 +107,9 @@ export class ProductService {
     const normalizedCategory = parseOptionalText(category);
     const normalizedMinPrice = parseOptionalNumber(minPrice);
     const normalizedMaxPrice = parseOptionalNumber(maxPrice);
-    const normalizedSortBy: 'createdAt' | 'price' | 'title' =
+    const normalizedSortBy: ProductSortField =
       sortBy === 'price' || sortBy === 'title' || sortBy === 'createdAt' ? sortBy : 'createdAt';
-    const normalizedOrder: 'asc' | 'desc' = order === 'asc' ? 'asc' : 'desc';
+    const normalizedOrder: SortDirection = order === 'asc' ? 'asc' : 'desc';
     const normalizedPage = parsePositiveInt(page, 1);
     const normalizedLimit = Math.min(200, parsePositiveInt(limit, 12));
     const skip = (normalizedPage - 1) * normalizedLimit;
@@ -130,6 +133,8 @@ export class ProductService {
       if (normalizedMaxPrice !== undefined) where.price.lte = normalizedMaxPrice;
     }
 
+    // Keep count and page data in the same request window so filters always
+    // produce a consistent result set for the current screen.
     const [products, total] = await Promise.all([
       prisma.product.findMany({
         where,
@@ -156,9 +161,7 @@ export class ProductService {
 
   // Finds one product by id and returns category, specs, and reviews.
   async findById(id: string) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const db = prisma as any;
-    const product = await db.product.findUnique({
+    const product = await prisma.product.findUnique({
       where: { id },
       include: {
         category: true,

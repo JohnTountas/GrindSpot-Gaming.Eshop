@@ -12,18 +12,18 @@ import {
 } from './catalogManagement.dto';
 import { parseOptionalText, parsePositiveInt } from './catalogManagement.helpers';
 
+type AdminProductListParams = {
+  page?: number | string;
+  limit?: number | string;
+  search?: string | string[];
+};
+
 /**
  * Provides admin workflows for editing product specifications and reviews.
  */
 export class CatalogManagementService {
-  // Returns the database client used by admin catalog operations.
-  private getDb() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return prisma as any;
-  }
-
   // Lists products with pagination and optional search filters for admin tooling.
-  async listProducts(params: { page?: number | string; limit?: number | string; search?: string | string[] }) {
+  async listProducts(params: AdminProductListParams) {
     const { page = 1, limit = 40, search } = params;
     const normalizedPage = parsePositiveInt(page, 1);
     const normalizedLimit = Math.min(200, parsePositiveInt(limit, 40));
@@ -65,8 +65,7 @@ export class CatalogManagementService {
 
   // Retrieves product content.
   async getProductContent(productId: string) {
-    const db = this.getDb();
-    const product = await db.product.findUnique({
+    const product = await prisma.product.findUnique({
       where: { id: productId },
       include: {
         category: true,
@@ -88,7 +87,6 @@ export class CatalogManagementService {
 
   // Creates specification.
   async createSpecification(productId: string, data: CreateSpecificationDTO) {
-    const db = this.getDb();
     const product = await prisma.product.findUnique({
       where: { id: productId },
       select: { id: true },
@@ -98,7 +96,7 @@ export class CatalogManagementService {
       throw new AppError('Product not found', 404);
     }
 
-    const specification = await db.productSpecification.create({
+    const specification = await prisma.productSpecification.create({
       data: {
         productId,
         label: data.label,
@@ -112,8 +110,7 @@ export class CatalogManagementService {
 
   // Updates specification.
   async updateSpecification(specificationId: string, data: UpdateSpecificationDTO) {
-    const db = this.getDb();
-    const existing = await db.productSpecification.findUnique({
+    const existing = await prisma.productSpecification.findUnique({
       where: { id: specificationId },
       select: { id: true },
     });
@@ -122,7 +119,7 @@ export class CatalogManagementService {
       throw new AppError('Specification not found', 404);
     }
 
-    return db.productSpecification.update({
+    return prisma.productSpecification.update({
       where: { id: specificationId },
       data,
     });
@@ -130,8 +127,7 @@ export class CatalogManagementService {
 
   // Deletes specification.
   async deleteSpecification(specificationId: string) {
-    const db = this.getDb();
-    const existing = await db.productSpecification.findUnique({
+    const existing = await prisma.productSpecification.findUnique({
       where: { id: specificationId },
       select: { id: true },
     });
@@ -140,7 +136,7 @@ export class CatalogManagementService {
       throw new AppError('Specification not found', 404);
     }
 
-    await db.productSpecification.delete({
+    await prisma.productSpecification.delete({
       where: { id: specificationId },
     });
 
@@ -149,7 +145,6 @@ export class CatalogManagementService {
 
   // Creates review.
   async createReview(productId: string, data: CreateReviewDTO) {
-    const db = this.getDb();
     const product = await prisma.product.findUnique({
       where: { id: productId },
       select: { id: true },
@@ -159,7 +154,7 @@ export class CatalogManagementService {
       throw new AppError('Product not found', 404);
     }
 
-    const review = await db.productReview.create({
+    const review = await prisma.productReview.create({
       data: {
         productId,
         authorName: data.authorName,
@@ -175,8 +170,7 @@ export class CatalogManagementService {
 
   // Updates review.
   async updateReview(reviewId: string, data: UpdateReviewDTO) {
-    const db = this.getDb();
-    const existing = await db.productReview.findUnique({
+    const existing = await prisma.productReview.findUnique({
       where: { id: reviewId },
       select: { id: true },
     });
@@ -185,7 +179,7 @@ export class CatalogManagementService {
       throw new AppError('Review not found', 404);
     }
 
-    return db.productReview.update({
+    return prisma.productReview.update({
       where: { id: reviewId },
       data,
     });
@@ -193,8 +187,7 @@ export class CatalogManagementService {
 
   // Deletes review.
   async deleteReview(reviewId: string) {
-    const db = this.getDb();
-    const existing = await db.productReview.findUnique({
+    const existing = await prisma.productReview.findUnique({
       where: { id: reviewId },
       select: { id: true },
     });
@@ -203,7 +196,7 @@ export class CatalogManagementService {
       throw new AppError('Review not found', 404);
     }
 
-    await db.productReview.delete({
+    await prisma.productReview.delete({
       where: { id: reviewId },
     });
 

@@ -275,16 +275,16 @@ async function seedConfiguredUsers(): Promise<string[]> {
 }
 
 // Clears existing data when an explicit reset seed run is requested.
-async function resetSeedData(db: any): Promise<void> {
+async function resetSeedData(): Promise<void> {
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
   await prisma.cartItem.deleteMany();
   await prisma.cart.deleteMany();
-  await db.productReview.deleteMany();
-  await db.productSpecification.deleteMany();
-  await db.compareItem.deleteMany();
-  await db.wishlistItem.deleteMany();
-  await db.loyaltyProfile.deleteMany();
+  await prisma.productReview.deleteMany();
+  await prisma.productSpecification.deleteMany();
+  await prisma.compareItem.deleteMany();
+  await prisma.wishlistItem.deleteMany();
+  await prisma.loyaltyProfile.deleteMany();
   await prisma.product.deleteMany();
   await prisma.category.deleteMany();
 
@@ -297,12 +297,11 @@ async function resetSeedData(db: any): Promise<void> {
 // Runs the Prisma seed workflow to reset and repopulate catalog data.
 async function main() {
   console.log("Starting database ...");
-  const db = prisma as any;
   const shouldResetData = process.env.SEED_RESET === "true";
 
   if (shouldResetData) {
     console.log("SEED_RESET=true. Clearing existing catalog data before seeding.");
-    await resetSeedData(db);
+    await resetSeedData();
   }
 
   const seededUserEmails = await seedConfiguredUsers();
@@ -838,8 +837,8 @@ async function main() {
     }))
   );
 
-  await db.productSpecification.createMany({ data: specifications });
-  await db.productReview.createMany({ data: reviews });
+  await prisma.productSpecification.createMany({ data: specifications });
+  await prisma.productReview.createMany({ data: reviews });
   console.log("Product specifications created:", specifications.length);
   console.log("Product reviews created:", reviews.length);
 

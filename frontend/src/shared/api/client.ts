@@ -1,22 +1,21 @@
-/**
- * Axios API client with token injection and refresh retry handling.
- */
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { clearSession, getAccessToken, setAccessToken } from '@/shared/auth/session';
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { clearSession, getAccessToken, setAccessToken } from "@/shared/auth/session";
 
 // Base API URL used by the frontend HTTP client.
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
-// Axios instance configured for JSON APIs and credentialed requests.
+// The storefront relies on refresh cookies, so every request must be allowed to
+// carry credentials even when the frontend and backend live on separate hosts.
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   withCredentials: true, // Include cookies for refresh tokens
 });
 
-// Attaches the access token to outgoing requests when present.
+// The access token stays in memory/local storage on the client side. We attach
+// it late, per request, so token refreshes immediately affect subsequent calls.
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = getAccessToken();
@@ -28,7 +27,8 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Handles token refresh on 401 responses and retries the original request.
+//Τhe short-lived access token expired while the refresh cookie is still valid.
+// The retry marker prevents infinite loops if `/auth/refresh` also fails.
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -40,25 +40,23 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        // Try to refresh token
-        const response = await axios.post(
-          `${API_URL}/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
+        const response = await axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true });
 
         const { accessToken } = response.data;
         setAccessToken(accessToken);
 
-        // Retry original request with new token
+        // Replay the original request once with the fresh bearer token so
+        // calling code sees a normal success path instead of refresh plumbing.
         if (originalRequest.headers) {
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         }
         return api(originalRequest);
       } catch (refreshError) {
-        // Refresh failed, clear auth and redirect to login
+        // When refresh fails, the browser session is no longer recoverable from
+        // the client alone, so we clear local state and send the user through a
+        // clean login flow.
         clearSession();
-        window.location.href = '/login';
+        window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }

@@ -175,8 +175,6 @@ git push origin main
 ### 3. Deploy frontend to Vercel
 
 ```powershell
-cd frontend
-npm run build
 vercel --prod
 ```
 

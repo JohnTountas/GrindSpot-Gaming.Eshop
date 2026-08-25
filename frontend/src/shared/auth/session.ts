@@ -17,10 +17,14 @@ let cachedSnapshot: SessionSnapshot | null = null;
 let cachedAccessToken: string | null = null;
 let cachedUserRaw: string | null = null;
 
+// Storage access must stay guarded because these helpers are imported by code
+// that can run during SSR-style tool execution and build-time analysis.
 function hasLocalStorage() {
   return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
 }
 
+// One custom event keeps React hooks, non-React helpers, and multi-tab behavior
+// aligned without forcing callers to understand the storage implementation.
 function notifySessionChanged() {
   if (typeof window === 'undefined') {
     return;
@@ -44,6 +48,9 @@ function parseStoredUser(raw: string | null): User | null {
   }
 }
 
+// Reads the persisted auth state once and reuses the parsed result until the
+// underlying storage payload changes. This avoids repeated JSON parsing across
+// route guards, API interceptors, and header components.
 function getSessionSnapshot(): SessionSnapshot {
   if (!hasLocalStorage()) {
     if (cachedSnapshot) {
@@ -138,7 +145,8 @@ export function clearSession(): void {
   notifySessionChanged();
 }
 
-// Reactive auth snapshot used by components and hooks that render session state.
+// `useSyncExternalStore` gives React a stable bridge into our storage-backed
+// session state without coupling auth persistence to a global state library.
 export function useAuthSession() {
   const snapshot = useSyncExternalStore(
     subscribeToSession,
