@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react';
-import { BRAND_LOGO_SRC, BRAND_NAME, BRAND_TAGLINE } from '@/shared/brand/identity';
-import { pingBackendHealth } from '@/shared/api/health';
+import { useEffect, useState } from "react";
+import { BRAND_LOGO_SRC, BRAND_NAME, BRAND_TAGLINE } from "@/shared/brand/identity";
+import { pingBackendHealth } from "@/shared/api/health";
 
-const WARMUP_ENABLED = import.meta.env.VITE_ENABLE_BACKEND_WARMUP_OVERLAY === 'true';
+const WARMUP_ENABLED = import.meta.env.VITE_ENABLE_BACKEND_WARMUP_OVERLAY === "true";
 const OVERLAY_REVEAL_DELAY_MS = 1200;
 const RETRY_DELAY_MS = 2500;
 const REQUEST_TIMEOUT_MS = 8000;
 
-type WarmupState = 'checking' | 'waking';
+type WarmupState = "checking" | "waking";
 
 // Covers the initial Render cold start with a branded storefront-level overlay.
 export function BackendWarmupOverlay() {
   const [ready, setReady] = useState(!WARMUP_ENABLED);
   const [visible, setVisible] = useState(false);
-  const [state, setState] = useState<WarmupState>('checking');
+  const [state, setState] = useState<WarmupState>("checking");
 
   useEffect(() => {
     if (!WARMUP_ENABLED) {
@@ -60,7 +60,7 @@ export function BackendWarmupOverlay() {
         return;
       }
 
-      setState('waking');
+      setState("waking");
       retryTimeoutId = window.setTimeout(() => {
         void checkBackendHealth();
       }, RETRY_DELAY_MS);
@@ -87,17 +87,12 @@ export function BackendWarmupOverlay() {
   }
 
   const statusMessage =
-    state === 'checking'
-      ? 'Syncing the storefront and checking service readiness.'
-      : 'Loading... This may take a few seconds while the backend wakes up.';
+    state === "checking"
+      ? "Syncing the storefront and checking service readiness."
+      : "Please wait while the backend wakes up...";
 
   return (
-    <div
-      aria-live="polite"
-      aria-busy="true"
-      className="backend-warmup-overlay"
-      role="status"
-    >
+    <div aria-live="polite" aria-busy="true" className="backend-warmup-overlay" role="status">
       <div className="backend-warmup-panel">
         <div className="backend-warmup-emblem" aria-hidden="true">
           <div className="backend-warmup-ring backend-warmup-ring--outer" />
@@ -115,9 +110,7 @@ export function BackendWarmupOverlay() {
         <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
           Loading the arena
         </h2>
-        <p className="max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
-          {statusMessage}
-        </p>
+        <p className="max-w-xl text-sm leading-6 text-slate-300 sm:text-base">{statusMessage}</p>
         <p className="text-xs uppercase tracking-[0.28em] text-cyan-100/55">{BRAND_TAGLINE}</p>
 
         <div className="backend-warmup-dots" aria-hidden="true">
