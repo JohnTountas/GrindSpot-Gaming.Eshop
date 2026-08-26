@@ -39,7 +39,7 @@ services:
       - key: JWT_REFRESH_EXPIRES_IN
         value: 7d
       - key: AUTO_SEED
-        value: "false"
+        value: "true"
       - key: RUN_MIGRATIONS_ON_STARTUP
         value: "false"
       - key: UPLOAD_DIR
