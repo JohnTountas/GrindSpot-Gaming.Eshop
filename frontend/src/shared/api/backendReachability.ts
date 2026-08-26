@@ -1,18 +1,45 @@
 const BACKEND_REACHABLE_EVENT = "grindspot:backend-reachable";
-const BACKEND_REACHABLE_SESSION_KEY = "grindspot:backend-reachable";
+const BACKEND_REACHABLE_STORAGE_KEY = "grindspot:backend-reachable-at";
+const BACKEND_REACHABLE_TTL_MS = 15 * 60 * 1000;
 
 function canUseBrowserStorage(): boolean {
-  return typeof window !== "undefined" && typeof window.sessionStorage !== "undefined";
+  return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
 }
 
-// Remembers successful backend reachability for the current tab so the warmup
-// overlay does not keep replaying after the API has already answered once.
-export function hasBackendBeenReachable(): boolean {
+function readBackendReachableTimestamp(): number | null {
   if (!canUseBrowserStorage()) {
+    return null;
+  }
+
+  const rawValue = window.localStorage.getItem(BACKEND_REACHABLE_STORAGE_KEY);
+  if (!rawValue) {
+    return null;
+  }
+
+  const parsedValue = Number(rawValue);
+  if (!Number.isFinite(parsedValue) || parsedValue <= 0) {
+    window.localStorage.removeItem(BACKEND_REACHABLE_STORAGE_KEY);
+    return null;
+  }
+
+  return parsedValue;
+}
+
+// Remembers recent backend reachability for a short window so reloads and new
+// tabs in the same browser do not flash the warmup overlay once the API is
+// already demonstrably awake.
+export function hasBackendBeenReachable(): boolean {
+  const lastReachableAt = readBackendReachableTimestamp();
+  if (!lastReachableAt) {
     return false;
   }
 
-  return window.sessionStorage.getItem(BACKEND_REACHABLE_SESSION_KEY) === "true";
+  const isFresh = Date.now() - lastReachableAt < BACKEND_REACHABLE_TTL_MS;
+  if (!isFresh && canUseBrowserStorage()) {
+    window.localStorage.removeItem(BACKEND_REACHABLE_STORAGE_KEY);
+  }
+
+  return isFresh;
 }
 
 // Broadcasts a single shared signal for any code path that confirms the backend
@@ -23,7 +50,7 @@ export function markBackendReachable(): void {
   }
 
   if (canUseBrowserStorage()) {
-    window.sessionStorage.setItem(BACKEND_REACHABLE_SESSION_KEY, "true");
+    window.localStorage.setItem(BACKEND_REACHABLE_STORAGE_KEY, String(Date.now()));
   }
 
   window.dispatchEvent(new Event(BACKEND_REACHABLE_EVENT));

@@ -7,7 +7,7 @@ import {
 import { pingBackendHealth } from "@/shared/api/health";
 
 const WARMUP_ENABLED = import.meta.env.VITE_ENABLE_BACKEND_WARMUP_OVERLAY === "true";
-const OVERLAY_REVEAL_DELAY_MS = 1200;
+const OVERLAY_REVEAL_DELAY_MS = 2200;
 const RETRY_DELAY_MS = 2500;
 const REQUEST_TIMEOUT_MS = 8000;
 const FAILSAFE_DISMISS_DELAY_MS = 15000;
