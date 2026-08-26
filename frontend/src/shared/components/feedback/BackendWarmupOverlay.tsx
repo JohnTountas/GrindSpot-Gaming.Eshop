@@ -118,21 +118,16 @@ export function BackendWarmupOverlay() {
         <div className="backend-warmup-emblem" aria-hidden="true">
           <div className="backend-warmup-ring backend-warmup-ring--outer" />
           <div className="backend-warmup-ring backend-warmup-ring--inner" />
-          <img
-            src={BRAND_LOGO_SRC}
-            alt="loading_screen_logo"
-            className="relative z-10 h-16 w-16 object-contain drop-shadow-[0_0_24px_rgba(29,242,255,0.28)]"
-          />
+          <img src={BRAND_LOGO_SRC} alt="loading_screen_logo" className="backend-warmup-logo" />
         </div>
 
-        <p className="text-xs font-semibold uppercase tracking-[0.36em] text-cyan-200/70">
-          {BRAND_NAME}
-        </p>
-        <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
-          Loading the arena
-        </h2>
-        <p className="max-w-xl text-sm leading-6 text-slate-300 sm:text-base">{statusMessage}</p>
-        <p className="text-xs uppercase tracking-[0.28em] text-cyan-100/55">{BRAND_TAGLINE}</p>
+        <p className="backend-warmup-brand">{BRAND_NAME}</p>
+        <h2 className="backend-warmup-title text-balance">Loading the arena</h2>
+        <p className="backend-warmup-status">{statusMessage}</p>
+        <div className="backend-warmup-progress" aria-hidden="true">
+          <span />
+        </div>
+        <p className="backend-warmup-tagline">{BRAND_TAGLINE}</p>
 
         <div className="backend-warmup-dots" aria-hidden="true">
           <span />
