@@ -1,8 +1,9 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { clearSession, getAccessToken, setAccessToken } from "@/shared/auth/session";
+import { resolveApiBaseUrl } from "./resolveApiBase";
 
 // Base API URL used by the frontend HTTP client.
-const API_URL = import.meta.env.VITE_API_URL || "/api";
+const API_URL = resolveApiBaseUrl();
 
 // The storefront relies on refresh cookies, so every request must be allowed to
 // carry credentials even when the frontend and backend live on separate hosts.

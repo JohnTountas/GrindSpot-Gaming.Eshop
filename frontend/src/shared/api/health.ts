@@ -1,18 +1,9 @@
-const API_URL = import.meta.env.VITE_API_URL || "/api";
-const EXPLICIT_HEALTH_URL = import.meta.env.VITE_API_HEALTH_URL?.trim();
+import { resolveHealthUrl } from "./resolveApiBase";
 
-// Resolves the backend health endpoint for local proxy, same-origin, and
-// split-origin deployments.
+// Reuse the same environment-aware URL resolver as the main API client so the
+// warmup overlay probes the exact backend origin the storefront will call next.
 export function resolveBackendHealthUrl(): string {
-  if (EXPLICIT_HEALTH_URL) {
-    return EXPLICIT_HEALTH_URL;
-  }
-
-  if (API_URL.startsWith("http://") || API_URL.startsWith("https://")) {
-    return API_URL.replace(/\/api\/?$/, "/health");
-  }
-
-  return "/health";
+  return resolveHealthUrl();
 }
 
 // The health probe intentionally avoids credentials because readiness does not
