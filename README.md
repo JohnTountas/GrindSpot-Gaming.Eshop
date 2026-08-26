@@ -137,21 +137,14 @@ So for normal local work, you usually do not need to create extra env files firs
 
 ## Recommended Production Workflow
 
-Best practice for this project:
+Production deploys are always manual and follow this fixed order:
 
-1. Make and test changes locally
-2. Commit and push to GitHub
-3. Deploy frontend manually to Vercel only when ready
-4. Deploy backend manually to Render only when ready
-5. Re-test production after each deploy
+`GitHub -> Database -> Backend -> Frontend`
 
-Important rule:
+This keeps the database schema ready before the backend uses it, and keeps the
+backend ready before the frontend exposes any new behavior to users.
 
-- `push` is not the same as `deploy`
-
-This is intentional so production does not change on every GitHub push.
-
-## Manual Deploy Workflow
+## Production Deploy Checklist
 
 ### 1. Verify locally
 
@@ -161,9 +154,29 @@ npm run db:prepare
 npm run dev
 ```
 
-Then test the app in the browser and test the main API flows you changed.
+Then test the browser flows you changed:
 
-### 2. Commit and push
+- homepage
+- product pages
+- login / logout
+- cart
+- checkout
+- admin area
+
+### 2. If you changed the database schema, create and test the migration locally
+
+```powershell
+cd backend
+npm run migrate
+npm run database
+```
+
+Use `npm run migrate` only for local development. It creates and applies a new
+Prisma migration against your local database.
+
+### 3. Push to GitHub
+
+Keep this step short and clean:
 
 ```powershell
 git status
@@ -172,40 +185,118 @@ git commit -m "Describe your change"
 git push origin main
 ```
 
-### 3. Deploy frontend to Vercel
+If GitHub checks fail, do not continue to production deploy.
+
+### 4. Deploy the production database
+
+Run this only when you changed Prisma schema, migrations, or any database-related
+behavior that depends on a new production schema.
+
+Open a terminal in `backend` and set the Supabase production connection string:
 
 ```powershell
-cd /NAME-OF-THE-PROJECT_FOLDER
+cd backend
+$env:DATABASE_URL="MY_SUPABASE_DB_URL"
+$env:DIRECT_URL="MY_SUPABASE_DB_URL"
+```
+
+Then apply the production migrations:
+
+```powershell
+npm run migrate:deploy
+```
+
+What this does:
+
+- connects Prisma to the live Supabase PostgreSQL database
+- checks which migration files already exist in `prisma/migrations`
+- applies only the pending migrations
+- does `not` create a new migration
+
+Important:
+
+- use `npm run migrate` only locally
+- use `npm run migrate:deploy` only for production
+- if there are no pending migrations, Prisma will report that nothing needs to be applied
+
+### 5. Deploy the backend to Render
+
+After the production database is ready, deploy the backend manually so the live
+API starts using the updated schema and latest server code.
+
+Steps:
+
+1. Open the Render dashboard
+2. Select the `grindspot-backend` service
+3. Click `Manual Deploy`
+4. Click `Deploy latest commit`
+
+Before starting the deploy, verify that the important environment variables are
+correct in Render:
+
+- `DATABASE_URL`
+- `DIRECT_URL`
+- `JWT_SECRET`
+- `CORS_ORIGIN`
+- any other backend secret or API key used by the project
+
+After the deploy finishes, verify the live backend:
+
+- `https://grindspot-backend.onrender.com/health`
+- `https://grindspot-backend.onrender.com/api/products`
+
+If the backend health check fails, stop here and fix the issue before deploying
+the frontend.
+
+### 6. Deploy the frontend to Vercel
+
+Deploy the frontend only after the backend is healthy. Run the Vercel deploy
+from the repository root, not from the `frontend` folder.
+
+```powershell
+cd C:\Users\tmacj\Desktop\GrindSpot-Gaming.Eshop
 vercel --prod
 ```
 
-### 4. Deploy backend to Render
+Why from the repository root:
 
-Use one of these:
+- the Vercel project is already configured with `Root Directory = frontend`
+- running `vercel --prod` inside `frontend/` can cause the wrong path resolution during deploy
 
-- Render dashboard -> `Manual Deploy`
-- Render CLI -> deploy the `grindspot-backend` service manually
+After the deploy finishes, verify the live frontend:
 
-### 5. Verify production
+- `https://grindspot.vercel.app`
 
-Check:
+Then test the main user flows:
+
+- homepage
+- product catalog
+- product detail
+- login / logout
+- cart
+- checkout
+- admin dashboard
+
+### 7. Final production smoke test
+
+After all deploy steps are complete, verify the full live stack one more time:
 
 - `https://grindspot.vercel.app`
 - `https://grindspot-backend.onrender.com/health`
 - `https://grindspot-backend.onrender.com/api/products`
+
+Use this final rule of thumb:
+
+- frontend-only changes: `GitHub -> Frontend`
+- frontend + backend changes: `GitHub -> Backend -> Frontend`
+- database or Prisma changes: `GitHub -> Database -> Backend -> Frontend`
 
 ## Frontend Notes
 
 - Vite is the local frontend workflow
 - The frontend production project is configured for manual deploys
 - `frontend/vercel.json` includes SPA rewrites
-- `frontend/vercel.json` also disables Git-triggered deployments with:
-
-```json
-"git": {
-  "deploymentEnabled": false
-}
-```
+- Git-triggered production deploys are disabled on purpose
 
 ## Backend Notes
 

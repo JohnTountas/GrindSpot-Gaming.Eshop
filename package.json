@@ -17,6 +17,6 @@
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
-    "prisma": "^8.0.0-rc.10"
+    "prisma": "^8.0.0-rc.12"
   }
 }
