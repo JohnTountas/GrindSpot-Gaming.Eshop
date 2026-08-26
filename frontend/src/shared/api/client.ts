@@ -1,6 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { clearSession, getAccessToken, setAccessToken } from "@/shared/auth/session";
 import { resolveApiBaseUrl } from "./resolveApiBase";
+import { markBackendReachable } from "./backendReachability";
 
 // Base API URL used by the frontend HTTP client.
 const API_URL = resolveApiBaseUrl();
@@ -31,10 +32,17 @@ api.interceptors.request.use(
 //Τhe short-lived access token expired while the refresh cookie is still valid.
 // The retry marker prevents infinite loops if `/auth/refresh` also fails.
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    markBackendReachable();
+    return response;
+  },
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
     const token = getAccessToken();
+
+    if (error.response) {
+      markBackendReachable();
+    }
 
     // Only refresh when the user still has an active local session.
     if (error.response?.status === 401 && token && !originalRequest._retry) {

@@ -1,4 +1,5 @@
 import { resolveHealthUrl } from "./resolveApiBase";
+import { markBackendReachable } from "./backendReachability";
 
 // Reuse the same environment-aware URL resolver as the main API client so the
 // warmup overlay probes the exact backend origin the storefront will call next.
@@ -21,5 +22,6 @@ export async function pingBackendHealth(signal?: AbortSignal): Promise<boolean> 
     signal,
   });
 
+  markBackendReachable();
   return response.ok;
 }

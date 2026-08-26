@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { BRAND_LOGO_SRC, BRAND_NAME, BRAND_TAGLINE } from "@/shared/brand/identity";
+import {
+  hasBackendBeenReachable,
+  subscribeToBackendReachable,
+} from "@/shared/api/backendReachability";
 import { pingBackendHealth } from "@/shared/api/health";
 
 const WARMUP_ENABLED = import.meta.env.VITE_ENABLE_BACKEND_WARMUP_OVERLAY === "true";
@@ -12,12 +16,12 @@ type WarmupState = "checking" | "waking";
 
 // Covers the initial Render cold start with a branded storefront-level overlay.
 export function BackendWarmupOverlay() {
-  const [ready, setReady] = useState(!WARMUP_ENABLED);
+  const [ready, setReady] = useState(!WARMUP_ENABLED || hasBackendBeenReachable());
   const [visible, setVisible] = useState(false);
   const [state, setState] = useState<WarmupState>("checking");
 
   useEffect(() => {
-    if (!WARMUP_ENABLED) {
+    if (!WARMUP_ENABLED || ready) {
       return;
     }
 
@@ -26,6 +30,30 @@ export function BackendWarmupOverlay() {
     let revealTimeoutId: number | undefined;
     let failsafeTimeoutId: number | undefined;
     let activeController: AbortController | null = null;
+
+    const dismissOverlay = () => {
+      if (!isMounted) {
+        return;
+      }
+
+      if (retryTimeoutId) {
+        window.clearTimeout(retryTimeoutId);
+      }
+
+      if (revealTimeoutId) {
+        window.clearTimeout(revealTimeoutId);
+      }
+
+      if (failsafeTimeoutId) {
+        window.clearTimeout(failsafeTimeoutId);
+      }
+
+      activeController?.abort();
+      setReady(true);
+      setVisible(false);
+    };
+
+    const unsubscribeFromReachability = subscribeToBackendReachable(dismissOverlay);
 
     revealTimeoutId = window.setTimeout(() => {
       if (isMounted && !ready) {
@@ -41,8 +69,7 @@ export function BackendWarmupOverlay() {
         return;
       }
 
-      setReady(true);
-      setVisible(false);
+      dismissOverlay();
     }, FAILSAFE_DISMISS_DELAY_MS);
 
     async function checkBackendHealth() {
@@ -62,11 +89,7 @@ export function BackendWarmupOverlay() {
         }
 
         if (isHealthy) {
-          if (failsafeTimeoutId) {
-            window.clearTimeout(failsafeTimeoutId);
-          }
-          setReady(true);
-          setVisible(false);
+          dismissOverlay();
           return;
         }
       } catch {
@@ -88,6 +111,7 @@ export function BackendWarmupOverlay() {
     return () => {
       isMounted = false;
       activeController?.abort();
+      unsubscribeFromReachability();
 
       if (retryTimeoutId) {
         window.clearTimeout(retryTimeoutId);
