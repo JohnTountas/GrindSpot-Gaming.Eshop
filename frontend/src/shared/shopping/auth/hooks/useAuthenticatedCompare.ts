@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { getAccessToken } from '@/shared/auth/session';
 import {
   buildCompareClearUrl,
   clearCompareProducts,
@@ -51,7 +52,8 @@ export function useAuthenticatedCompare(enabled: boolean) {
       }
 
       const compareClearUrl = buildCompareClearUrl();
-      const token = localStorage.getItem('accessToken');
+      // Reuse the shared session helper so auth storage rules stay centralized.
+      const token = getAccessToken();
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       };

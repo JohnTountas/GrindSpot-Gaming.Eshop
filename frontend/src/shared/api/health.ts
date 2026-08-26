@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 const EXPLICIT_HEALTH_URL = import.meta.env.VITE_API_HEALTH_URL?.trim();
 
 // Resolves the backend health endpoint for local proxy, same-origin, and
@@ -8,19 +8,25 @@ export function resolveBackendHealthUrl(): string {
     return EXPLICIT_HEALTH_URL;
   }
 
-  if (API_URL.startsWith('http://') || API_URL.startsWith('https://')) {
-    return API_URL.replace(/\/api\/?$/, '/health');
+  if (API_URL.startsWith("http://") || API_URL.startsWith("https://")) {
+    return API_URL.replace(/\/api\/?$/, "/health");
   }
 
-  return '/health';
+  return "/health";
 }
 
-// Small fetch wrapper used by the global backend warmup overlay.
+// The health probe intentionally avoids credentials because readiness does not
+// depend on the current user session. This keeps the warmup check resilient in
+// browsers that apply stricter third-party cookie or tracking protections.
 export async function pingBackendHealth(signal?: AbortSignal): Promise<boolean> {
   const response = await fetch(resolveBackendHealthUrl(), {
-    method: 'GET',
-    cache: 'no-store',
-    credentials: 'include',
+    method: "GET",
+    cache: "no-store",
+    mode: "cors",
+    credentials: "omit",
+    headers: {
+      Accept: "application/json",
+    },
     signal,
   });
 

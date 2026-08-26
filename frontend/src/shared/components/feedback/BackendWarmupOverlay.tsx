@@ -6,6 +6,7 @@ const WARMUP_ENABLED = import.meta.env.VITE_ENABLE_BACKEND_WARMUP_OVERLAY === "t
 const OVERLAY_REVEAL_DELAY_MS = 1200;
 const RETRY_DELAY_MS = 2500;
 const REQUEST_TIMEOUT_MS = 8000;
+const FAILSAFE_DISMISS_DELAY_MS = 15000;
 
 type WarmupState = "checking" | "waking";
 
@@ -23,6 +24,7 @@ export function BackendWarmupOverlay() {
     let isMounted = true;
     let retryTimeoutId: number | undefined;
     let revealTimeoutId: number | undefined;
+    let failsafeTimeoutId: number | undefined;
     let activeController: AbortController | null = null;
 
     revealTimeoutId = window.setTimeout(() => {
@@ -30,6 +32,18 @@ export function BackendWarmupOverlay() {
         setVisible(true);
       }
     }, OVERLAY_REVEAL_DELAY_MS);
+
+    // A readiness overlay should never become a permanent blocker. If a browser
+    // rejects or delays the cross-origin health probe differently, we prefer to
+    // fall back to the page's normal loading states instead of trapping the user.
+    failsafeTimeoutId = window.setTimeout(() => {
+      if (!isMounted) {
+        return;
+      }
+
+      setReady(true);
+      setVisible(false);
+    }, FAILSAFE_DISMISS_DELAY_MS);
 
     async function checkBackendHealth() {
       activeController?.abort();
@@ -48,6 +62,9 @@ export function BackendWarmupOverlay() {
         }
 
         if (isHealthy) {
+          if (failsafeTimeoutId) {
+            window.clearTimeout(failsafeTimeoutId);
+          }
           setReady(true);
           setVisible(false);
           return;
@@ -79,6 +96,10 @@ export function BackendWarmupOverlay() {
       if (revealTimeoutId) {
         window.clearTimeout(revealTimeoutId);
       }
+
+      if (failsafeTimeoutId) {
+        window.clearTimeout(failsafeTimeoutId);
+      }
     };
   }, [ready]);
 
@@ -99,7 +120,7 @@ export function BackendWarmupOverlay() {
           <div className="backend-warmup-ring backend-warmup-ring--inner" />
           <img
             src={BRAND_LOGO_SRC}
-            alt=""
+            alt="loading_screen_logo"
             className="relative z-10 h-16 w-16 object-contain drop-shadow-[0_0_24px_rgba(29,242,255,0.28)]"
           />
         </div>

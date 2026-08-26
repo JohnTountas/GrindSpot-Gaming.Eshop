@@ -5,6 +5,32 @@ import type { Cart, CartItem, Product } from '@/shared/types';
 import { guestCartId, guestCartStorageKey, guestCartUpdatedEvent } from '../constants';
 import type { StoredGuestCart } from '../types';
 
+// Some browsers or privacy modes allow the page to load but reject storage
+// access at runtime. These wrappers keep guest-cart reads and writes fail-safe.
+function readGuestCartStorageValue(): string | null {
+  try {
+    return localStorage.getItem(guestCartStorageKey);
+  } catch {
+    return null;
+  }
+}
+
+function writeGuestCartStorageValue(cart: StoredGuestCart): void {
+  try {
+    localStorage.setItem(guestCartStorageKey, JSON.stringify(cart));
+  } catch {
+    // Ignore persistence failures so the current tab can keep operating in memory.
+  }
+}
+
+function removeGuestCartStorageValue(): void {
+  try {
+    localStorage.removeItem(guestCartStorageKey);
+  } catch {
+    // Ignore cleanup failures because an unusable storage backend is already non-critical.
+  }
+}
+
 // Builds the empty guest-cart shell used when no persisted cart exists yet.
 function createEmptyGuestCart(): StoredGuestCart {
   const timestamp = new Date().toISOString();
@@ -58,7 +84,7 @@ export function persistStoredGuestCart(cart: StoredGuestCart): Cart {
     return toGuestCart(cart);
   }
 
-  localStorage.setItem(guestCartStorageKey, JSON.stringify(cart));
+  writeGuestCartStorageValue(cart);
   dispatchGuestCartUpdated();
   return toGuestCart(cart);
 }
@@ -69,7 +95,7 @@ export function readStoredGuestCart(): StoredGuestCart {
     return createEmptyGuestCart();
   }
 
-  const raw = localStorage.getItem(guestCartStorageKey);
+  const raw = readGuestCartStorageValue();
   if (!raw) {
     return createEmptyGuestCart();
   }
@@ -93,7 +119,7 @@ export function readStoredGuestCart(): StoredGuestCart {
       updatedAt: typeof parsed.updatedAt === 'string' ? parsed.updatedAt : fallbackCart.updatedAt,
     };
   } catch {
-    localStorage.removeItem(guestCartStorageKey);
+    removeGuestCartStorageValue();
     return createEmptyGuestCart();
   }
 }
@@ -123,7 +149,7 @@ export function clearStoredGuestCart() {
     return;
   }
 
-  localStorage.removeItem(guestCartStorageKey);
+  removeGuestCartStorageValue();
   dispatchGuestCartUpdated();
 }
 

@@ -38,10 +38,11 @@ function Layout() {
   // the same guest-to-account cart handoff.
   useGuestCartSync(authed, queryClient);
 
-  // Some transitions behave like full page changes even inside the SPA. Resetting
-  // scroll here keeps that experience predictable.
+  // `instant` is not part of the standard ScrollBehavior union and browsers can
+  // disagree on how to handle it. `auto` gives us the immediate jump we want
+  // while staying within the cross-browser API contract.
   function scrollToPageStart() {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }
 
   // Logout immediately drops client session state, then clears the refresh cookie
@@ -103,4 +104,3 @@ function Layout() {
 }
 
 export default Layout;
-

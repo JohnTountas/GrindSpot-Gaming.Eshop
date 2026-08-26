@@ -7,12 +7,38 @@ const guestOrderStorageKey = 'guestCheckoutOrders';
 
 type GuestOrderLookup = Record<string, Order>;
 
+// Guest-order receipts improve anonymous checkout UX, but they should never
+// crash the confirmation page when storage is unavailable or locked down.
+function readGuestOrderStorageValue(): string | null {
+  try {
+    return localStorage.getItem(guestOrderStorageKey);
+  } catch {
+    return null;
+  }
+}
+
+function writeGuestOrderStorageValue(orders: GuestOrderLookup): void {
+  try {
+    localStorage.setItem(guestOrderStorageKey, JSON.stringify(orders));
+  } catch {
+    // Ignore persistence failures and let the current page render from runtime data.
+  }
+}
+
+function removeGuestOrderStorageValue(): void {
+  try {
+    localStorage.removeItem(guestOrderStorageKey);
+  } catch {
+    // Ignore cleanup failures because storage is optional for guest receipts.
+  }
+}
+
 function readGuestOrderLookup(): GuestOrderLookup {
   if (typeof window === 'undefined') {
     return {};
   }
 
-  const raw = localStorage.getItem(guestOrderStorageKey);
+  const raw = readGuestOrderStorageValue();
 
   if (!raw) {
     return {};
@@ -21,7 +47,7 @@ function readGuestOrderLookup(): GuestOrderLookup {
   try {
     return JSON.parse(raw) as GuestOrderLookup;
   } catch {
-    localStorage.removeItem(guestOrderStorageKey);
+    removeGuestOrderStorageValue();
     return {};
   }
 }
@@ -34,7 +60,7 @@ export function persistGuestOrder(order: Order): void {
 
   const orders = readGuestOrderLookup();
   orders[order.id] = order;
-  localStorage.setItem(guestOrderStorageKey, JSON.stringify(orders));
+  writeGuestOrderStorageValue(orders);
 }
 
 // Reads a previously stored guest order snapshot by id.
