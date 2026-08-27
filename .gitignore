@@ -52,8 +52,6 @@ docker-compose.override.yml
 # Prisma
 backend/prisma/database.js
 
-# Fly CLI local cache
-.fly-home/
 .chrome-headless/
 
 # Database migration artifacts

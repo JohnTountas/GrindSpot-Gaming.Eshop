@@ -16,7 +16,6 @@
     "docker:logs": "docker compose logs -f app"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1",
-    "prisma": "^8.0.0-rc.12"
+    "concurrently": "^9.2.1"
   }
 }
