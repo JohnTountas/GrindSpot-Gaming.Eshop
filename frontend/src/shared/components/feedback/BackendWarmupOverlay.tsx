@@ -185,7 +185,6 @@ export function BackendWarmupOverlay() {
         <h2 className="backend-warmup-title">{content.title}</h2>
         <p className="backend-warmup-status">{content.statusMessage}</p>
         <p className="backend-warmup-detail">{content.detailMessage}</p>
-        <p className="backend-warmup-tagline">{BRAND_TAGLINE}</p>
       </div>
     </div>
   );
