@@ -183,16 +183,7 @@ export function BackendWarmupOverlay() {
         <h2 className="backend-warmup-title">{content.title}</h2>
         <p className="backend-warmup-status">{content.statusMessage}</p>
         <p className="backend-warmup-detail">{content.detailMessage}</p>
-        <div className="backend-warmup-progress" aria-hidden="true">
-          <span />
-        </div>
         <p className="backend-warmup-tagline">{BRAND_TAGLINE}</p>
-
-        <div className="backend-warmup-dots" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
       </div>
     </div>
   );
