@@ -68,6 +68,8 @@ export function markBackendReachable(): void {
     return;
   }
 
+  // Storage is the cross-refresh memory; the event is the same-tab fast path so
+  // the overlay can close immediately after any successful API response.
   if (canUseBrowserStorage()) {
     try {
       window.localStorage.setItem(BACKEND_REACHABLE_STORAGE_KEY, String(Date.now()));
@@ -84,6 +86,8 @@ export function subscribeToBackendReachable(callback: () => void): () => void {
     return () => undefined;
   }
 
+  // A plain window event keeps the contract framework-agnostic for any future
+  // non-React code that also needs to react to backend readiness.
   window.addEventListener(BACKEND_REACHABLE_EVENT, callback);
   return () => {
     window.removeEventListener(BACKEND_REACHABLE_EVENT, callback);

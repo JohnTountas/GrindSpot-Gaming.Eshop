@@ -16,6 +16,8 @@ const OVERLAY_EXIT_DURATION_MS = 260;
 
 // Covers the initial Render cold start with a branded storefront-level overlay.
 export function BackendWarmupOverlay() {
+  // Start hidden when the backend answered recently in this browser. That keeps
+  // refreshes and new tabs from flashing the warmup UI after the API is already up.
   const [ready, setReady] = useState(!WARMUP_ENABLED || hasBackendBeenReachable());
   const [visible, setVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -35,12 +37,17 @@ export function BackendWarmupOverlay() {
     let retryTimeoutId: number | undefined;
     let dismissTimeoutId: number | undefined;
     let activeController: AbortController | null = null;
+
+    // Delay the reveal so fast backend responses never flash the overlay.
     const revealTimeoutId = window.setTimeout(() => {
       if (isMounted && !ready) {
         setIsClosing(false);
         setVisible(true);
       }
     }, OVERLAY_REVEAL_DELAY_MS);
+
+    // Always leave the user an exit path even if a browser extension, privacy
+    // mode, or network edge case blocks the normal health-check flow.
     const failsafeTimeoutId = window.setTimeout(() => {
       if (!isMounted) {
         return;
@@ -68,6 +75,8 @@ export function BackendWarmupOverlay() {
 
       activeController?.abort();
 
+      // If the backend becomes reachable before the overlay is shown, skip the
+      // exit animation and complete immediately.
       if (!visibleRef.current) {
         setReady(true);
         setVisible(false);
@@ -89,6 +98,8 @@ export function BackendWarmupOverlay() {
     const unsubscribeFromReachability = subscribeToBackendReachable(dismissOverlay);
 
     async function checkBackendHealth() {
+      // Keep only one in-flight health probe so retries cannot stack up under
+      // slow networks or when the tab wakes from the background.
       activeController?.abort();
       activeController = new AbortController();
 
