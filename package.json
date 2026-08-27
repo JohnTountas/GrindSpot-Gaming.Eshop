@@ -8,6 +8,7 @@
     "dev:frontend": "node scripts/run-frontend-dev.js",
     "dev:backend": "node scripts/run-backend-dev.js",
     "dev:stop": "node scripts/stop-dev-processes.js",
+    "deploy:frontend": "node scripts/deploy-frontend-production.js",
     "db:prepare": "node scripts/prepare-backend-db.js",
     "migrate:db:import": "node scripts/import-postgres-sql.js",
     "migrate:data:import": "node backend/scripts/import-production-export.js",

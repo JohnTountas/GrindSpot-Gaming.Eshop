@@ -250,18 +250,20 @@ the frontend.
 
 ### 6. Deploy the frontend to Vercel
 
-Deploy the frontend only after the backend is healthy. Run the Vercel deploy
+Deploy the frontend only after the backend is healthy. Run the production helper
 from the repository root, not from the `frontend` folder.
 
 ```powershell
 cd C:\Users\tmacj\Desktop\GrindSpot-Gaming.Eshop
-vercel --prod
+npm run deploy:frontend
 ```
 
 Why from the repository root:
 
 - the Vercel project is already configured with `Root Directory = frontend`
-- running `vercel --prod` inside `frontend/` can cause the wrong path resolution during deploy
+- the helper deploys to the linked `grindspot` Vercel project explicitly
+- the helper then promotes `grindspot.vercel.app` to the new production deployment
+- running deploy commands inside `frontend/` can cause the wrong path resolution during deploy
 
 After the deploy finishes, verify the live frontend:
 
