@@ -352,13 +352,20 @@
     inset: -0.4rem;
     border-top-color: rgba(29, 242, 255, 0.95);
     border-right-color: rgba(46, 123, 255, 0.4);
-    animation: spin 2.6s linear infinite;
+    box-shadow:
+      0 0 20px rgba(29, 242, 255, 0.16),
+      inset 0 0 18px rgba(29, 242, 255, 0.08);
+    animation: backend-warmup-ring-orbit 2.6s linear infinite;
   }
 
   .backend-warmup-ring--inner {
     inset: 0.55rem;
     border-bottom-color: rgba(207, 102, 255, 0.72);
     border-left-color: rgba(29, 242, 255, 0.26);
+    box-shadow:
+      0 0 16px rgba(207, 102, 255, 0.12),
+      inset 0 0 14px rgba(29, 242, 255, 0.06);
+    animation: backend-warmup-ring-counter-orbit 3.4s linear infinite;
   }
 
   .backend-warmup-brand {
@@ -491,5 +498,36 @@
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes backend-warmup-ring-orbit {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+
+  50% {
+    transform: rotate(180deg) scale(1.018);
+  }
+
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes backend-warmup-ring-counter-orbit {
+  0% {
+    transform: rotate(0deg) scale(0.985);
+    opacity: 0.72;
+  }
+
+  50% {
+    transform: rotate(-180deg) scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: rotate(-360deg) scale(0.985);
+    opacity: 0.72;
   }
 }
