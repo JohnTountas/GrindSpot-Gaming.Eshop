@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { BRAND_LOGO_SRC, BRAND_NAME, BRAND_TAGLINE } from "@/shared/brand/identity";
+import { BRAND_LOGO_SRC, BRAND_NAME } from "@/shared/brand/identity";
 import {
   hasBackendBeenReachable,
   subscribeToBackendReachable,
