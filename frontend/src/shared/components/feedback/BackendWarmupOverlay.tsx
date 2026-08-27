@@ -6,24 +6,34 @@ import {
 } from "@/shared/api/backendReachability";
 import { pingBackendHealth } from "@/shared/api/health";
 import { getBackendWarmupContent, type WarmupState } from "./backendWarmupContent";
+import {
+  hasStorefrontWarmupReady,
+  subscribeToStorefrontWarmupReady,
+} from "./storefrontWarmupReady";
 
 const WARMUP_ENABLED = import.meta.env.VITE_ENABLE_BACKEND_WARMUP_OVERLAY === "true";
 const OVERLAY_REVEAL_DELAY_MS = 2200;
 const RETRY_DELAY_MS = 2500;
 const REQUEST_TIMEOUT_MS = 8000;
 const FAILSAFE_DISMISS_DELAY_MS = 15000;
-const POST_READY_HOLD_MS = 6000;
+const POST_READY_HOLD_MS = 400;
 const OVERLAY_EXIT_DURATION_MS = 260;
 
 // Covers the initial Render cold start with a branded storefront-level overlay.
 export function BackendWarmupOverlay() {
+  const backendReadyAtStart = hasBackendBeenReachable();
+  const storefrontReadyAtStart = hasStorefrontWarmupReady();
   // Start hidden when the backend answered recently in this browser. That keeps
   // refreshes and new tabs from flashing the warmup UI after the API is already up.
-  const [ready, setReady] = useState(!WARMUP_ENABLED || hasBackendBeenReachable());
+  const [ready, setReady] = useState(
+    !WARMUP_ENABLED || (backendReadyAtStart && storefrontReadyAtStart)
+  );
   const [visible, setVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [state, setState] = useState<WarmupState>("checking");
   const visibleRef = useRef(visible);
+  const backendReadyRef = useRef(backendReadyAtStart);
+  const storefrontReadyRef = useRef(storefrontReadyAtStart);
 
   useEffect(() => {
     visibleRef.current = visible;
@@ -38,6 +48,14 @@ export function BackendWarmupOverlay() {
     let retryTimeoutId: number | undefined;
     let dismissTimeoutId: number | undefined;
     let activeController: AbortController | null = null;
+
+    const completeWarmupIfReady = () => {
+      if (!backendReadyRef.current || !storefrontReadyRef.current) {
+        return;
+      }
+
+      dismissOverlay();
+    };
 
     // Delay the reveal so fast backend responses never flash the overlay.
     const revealTimeoutId = window.setTimeout(() => {
@@ -102,7 +120,15 @@ export function BackendWarmupOverlay() {
       }, POST_READY_HOLD_MS);
     };
 
-    const unsubscribeFromReachability = subscribeToBackendReachable(dismissOverlay);
+    const unsubscribeFromReachability = subscribeToBackendReachable(() => {
+      backendReadyRef.current = true;
+      completeWarmupIfReady();
+    });
+
+    const unsubscribeFromStorefrontReady = subscribeToStorefrontWarmupReady(() => {
+      storefrontReadyRef.current = true;
+      completeWarmupIfReady();
+    });
 
     async function checkBackendHealth() {
       // Keep only one in-flight health probe so retries cannot stack up under
@@ -123,7 +149,8 @@ export function BackendWarmupOverlay() {
         }
 
         if (isHealthy) {
-          dismissOverlay();
+          backendReadyRef.current = true;
+          completeWarmupIfReady();
           return;
         }
       } catch {
@@ -150,6 +177,7 @@ export function BackendWarmupOverlay() {
       isMounted = false;
       activeController?.abort();
       unsubscribeFromReachability();
+      unsubscribeFromStorefrontReady();
 
       if (retryTimeoutId) {
         window.clearTimeout(retryTimeoutId);

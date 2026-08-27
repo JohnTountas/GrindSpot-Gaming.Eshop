@@ -7,8 +7,9 @@ interface BackendWarmupContent {
   detailMessage: string;
 }
 
-// Keep copy outside the component so design/content tweaks stay data-driven and
-// testable without reopening the warmup control flow.
+// Edit only this object when you want to change the loading-screen messages.
+// `checking` is the first phase users see and `waking` appears only if the
+// backend takes longer to become ready.
 const WARMUP_CONTENT: Record<WarmupState, BackendWarmupContent> = {
   checking: {
     phaseLabel: "Grindspot goes Live",
