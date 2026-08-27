@@ -23,6 +23,8 @@ const defaultEnv = {
   STRIPE_WEBHOOK_SECRET: "whsec_grindspot_webhook_secret_change_me",
 };
 
+// These defaults let a clean clone boot locally without secret hunting. Any
+// real environment value still wins because `process.env` is merged last.
 const child = spawn("npm", ["run", "dev:tsx"], {
   cwd: backendRoot,
   stdio: "inherit",
@@ -36,4 +38,3 @@ const child = spawn("npm", ["run", "dev:tsx"], {
 child.on("exit", (code) => {
   process.exit(code ?? 0);
 });
-

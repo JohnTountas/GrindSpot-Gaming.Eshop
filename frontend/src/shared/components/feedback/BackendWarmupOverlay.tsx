@@ -128,6 +128,8 @@ export function BackendWarmupOverlay() {
       }
 
       setState("waking");
+      // Retry with a fixed cadence so the perceived wait stays predictable and
+      // the overlay copy can remain honest about what the app is doing.
       retryTimeoutId = window.setTimeout(() => {
         void checkBackendHealth();
       }, RETRY_DELAY_MS);

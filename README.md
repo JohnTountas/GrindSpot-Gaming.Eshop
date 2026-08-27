@@ -254,7 +254,7 @@ Deploy the frontend only after the backend is healthy. Run the production helper
 from the repository root, not from the `frontend` folder.
 
 ```powershell
-cd C:\Users\tmacj\Desktop\GrindSpot-Gaming.Eshop
+cd C:\path\to\GrindSpot-Gaming.Eshop
 npm run deploy:frontend
 ```
 

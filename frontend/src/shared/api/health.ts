@@ -22,6 +22,8 @@ export async function pingBackendHealth(signal?: AbortSignal): Promise<boolean> 
     signal,
   });
 
+  // Any HTTP response proves that the backend origin is awake enough to answer
+  // requests, even if the specific status code is not `200 OK`.
   markBackendReachable();
   return response.ok;
 }

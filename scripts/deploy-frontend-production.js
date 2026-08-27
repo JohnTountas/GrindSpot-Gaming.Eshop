@@ -11,6 +11,9 @@ function normalizeDeploymentHost(url) {
   return url.replace(/^https?:\/\//, "").trim();
 }
 
+// Vercel CLI output is not perfectly stable across versions. We first try to
+// parse structured JSON, then fall back to the last JSON-looking line so minor
+// logging changes do not break the deployment pipeline.
 function parseJsonCandidate(output) {
   const trimmedOutput = output.trim();
 
@@ -38,6 +41,9 @@ function parseJsonCandidate(output) {
   return null;
 }
 
+// Production automation should survive both machine-readable and human-readable
+// Vercel responses. This keeps deploys resilient if the CLI prints status lines
+// before or after the payload we care about.
 function extractDeploymentHost(commandResult) {
   const combinedOutput = [commandResult.stdout, commandResult.stderr].filter(Boolean).join("\n").trim();
   const jsonPayload = parseJsonCandidate(combinedOutput);
@@ -107,6 +113,8 @@ function assignPublicAlias(deploymentHost) {
 }
 
 function main() {
+  // Keep the sequence intentionally linear: deploy first, promote alias second.
+  // That makes rollout state explicit in logs and easier to debug in CI/CD.
   const deploymentHost = deployProduction();
   assignPublicAlias(deploymentHost);
 }

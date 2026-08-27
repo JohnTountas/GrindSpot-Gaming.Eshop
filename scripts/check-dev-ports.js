@@ -83,7 +83,8 @@ async function getBlockedPorts() {
   const blockedPorts = [];
 
   for (const entry of requiredPorts) {
-    // Sequential checks keep console output stable and readable.
+    // Sequential checks keep console output stable and readable when a future
+    // maintainer adds more ports or extra diagnostics around the bind probe.
     const available = await canBind(entry.port);
     if (!available) {
       blockedPorts.push(entry);

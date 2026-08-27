@@ -21,6 +21,8 @@ export function shouldRecoverBackendQuery(query: BackendRecoverableQuery): boole
 export function useBackendReachabilityRecovery(queryClient: QueryClient) {
   useEffect(() => {
     return subscribeToBackendReachable(() => {
+      // Refetch only active recoverable queries so we repair the visible screen
+      // without reloading the entire cache after a cold-start recovery event.
       void queryClient.refetchQueries({
         type: "active",
         predicate: shouldRecoverBackendQuery,

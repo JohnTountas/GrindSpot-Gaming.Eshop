@@ -7,6 +7,8 @@ interface BackendWarmupContent {
   detailMessage: string;
 }
 
+// Keep copy outside the component so design/content tweaks stay data-driven and
+// testable without reopening the warmup control flow.
 const WARMUP_CONTENT: Record<WarmupState, BackendWarmupContent> = {
   checking: {
     phaseLabel: "Storefront link-up",
