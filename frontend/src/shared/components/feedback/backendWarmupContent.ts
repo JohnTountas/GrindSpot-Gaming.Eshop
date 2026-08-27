@@ -14,13 +14,13 @@ const WARMUP_CONTENT: Record<WarmupState, BackendWarmupContent> = {
     phaseLabel: "Storefront",
     title: "Loading Grindspot",
     statusMessage: "Connecting to the live session.",
-    detailMessage: "Services are coming online.",
+    detailMessage: "Services are coming online...",
   },
   waking: {
     phaseLabel: "Backend warmup",
     title: "Loading Grindspot",
     statusMessage: "Waking the live catalog.",
-    detailMessage: "-Please refresh your browser if products don't appear.-",
+    detailMessage: "- Please refresh your browser if products don't appear -",
   },
 };
 
