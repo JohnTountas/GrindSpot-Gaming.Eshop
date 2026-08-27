@@ -12,6 +12,7 @@ const OVERLAY_REVEAL_DELAY_MS = 2200;
 const RETRY_DELAY_MS = 2500;
 const REQUEST_TIMEOUT_MS = 8000;
 const FAILSAFE_DISMISS_DELAY_MS = 15000;
+const POST_READY_HOLD_MS = 3000;
 const OVERLAY_EXIT_DURATION_MS = 260;
 
 // Covers the initial Render cold start with a branded storefront-level overlay.
@@ -83,16 +84,22 @@ export function BackendWarmupOverlay() {
         return;
       }
 
-      setIsClosing(true);
       dismissTimeoutId = window.setTimeout(() => {
         if (!isMounted) {
           return;
         }
 
-        setVisible(false);
-        setReady(true);
-        setIsClosing(false);
-      }, OVERLAY_EXIT_DURATION_MS);
+        setIsClosing(true);
+        dismissTimeoutId = window.setTimeout(() => {
+          if (!isMounted) {
+            return;
+          }
+
+          setVisible(false);
+          setReady(true);
+          setIsClosing(false);
+        }, OVERLAY_EXIT_DURATION_MS);
+      }, POST_READY_HOLD_MS);
     };
 
     const unsubscribeFromReachability = subscribeToBackendReachable(dismissOverlay);
@@ -127,7 +134,9 @@ export function BackendWarmupOverlay() {
         return;
       }
 
-      setState("waking");
+      if (visibleRef.current) {
+        setState("waking");
+      }
       // Retry with a fixed cadence so the perceived wait stays predictable and
       // the overlay copy can remain honest about what the app is doing.
       retryTimeoutId = window.setTimeout(() => {

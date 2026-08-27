@@ -11,16 +11,16 @@ interface BackendWarmupContent {
 // testable without reopening the warmup control flow.
 const WARMUP_CONTENT: Record<WarmupState, BackendWarmupContent> = {
   checking: {
-    phaseLabel: "Storefront",
-    title: "Loading Grindspot",
+    phaseLabel: "Grindspot goes Live",
+    title: "Loading in progress...",
     statusMessage: "Connecting to the live session.",
     detailMessage: "Services are coming online...",
   },
   waking: {
-    phaseLabel: "Backend warmup",
-    title: "Loading Grindspot",
-    statusMessage: "Waking the live catalog.",
-    detailMessage: "- Please refresh your browser if products don't appear -",
+    phaseLabel: "Backend's almost ready",
+    title: "Loading in progress...",
+    statusMessage: "Fetching data from the Database...",
+    detailMessage: "Backend is now serving to the frontpage...",
   },
 };
 
