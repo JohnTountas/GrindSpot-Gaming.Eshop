@@ -18,7 +18,7 @@ Full-stack gaming e-commerce monorepo with:
 - `Vercel` hosts the frontend
 - `Render` hosts the backend
 - `Supabase` hosts PostgreSQL
-- GitHub pushes do `not` deploy automatically to production
+- `GitHub` pushes do `not` deploy automatically to production
 - Production deploys are `manual`
 
 ## Demo Accounts
@@ -127,7 +127,7 @@ In this mode, the backend serves the built frontend through the app container.
 
 The local helper scripts already provide working defaults for development:
 
-- PostgreSQL database on `postgresql://grindspot:grindspot_password@localhost:5432/grindspot_DB`
+- PostgreSQL database on `postgresql://grindspot:_PASSWORD_@localhost:5432/grindspot_DB`
 - Backend port `5000`
 - Frontend port `3000`
 - `CORS_ORIGIN=http://localhost:3000`
@@ -174,20 +174,7 @@ npm run database
 Use `npm run migrate` only for local development. It creates and applies a new
 Prisma migration against your local database.
 
-### 3. Push to GitHub
-
-Keep this step short and clean:
-
-```powershell
-git status
-git add .
-git commit -m "Describe your change"
-git push origin main
-```
-
-If GitHub checks fail, do not continue to production deploy.
-
-### 4. Deploy the production database
+### 3. Deploy the production database
 
 Run this only when you changed Prisma schema, migrations, or any database-related
 behavior that depends on a new production schema.
@@ -198,6 +185,7 @@ Open a terminal in `backend` and set the Supabase production connection string:
 cd backend
 $env:DATABASE_URL="MY_SUPABASE_DB_URL"
 $env:DIRECT_URL="MY_SUPABASE_DB_URL"
+### (Private)
 ```
 
 Then apply the production migrations:
@@ -219,7 +207,7 @@ Important:
 - use `npm run migrate:deploy` only for production
 - if there are no pending migrations, Prisma will report that nothing needs to be applied
 
-### 5. Deploy the backend to Render
+### 4. Deploy the backend to Render
 
 After the production database is ready, deploy the backend manually so the live
 API starts using the updated schema and latest server code.
@@ -248,7 +236,7 @@ After the deploy finishes, verify the live backend:
 If the backend health check fails, stop here and fix the issue before deploying
 the frontend.
 
-### 6. Deploy the frontend to Vercel
+### 5. Deploy the frontend to Vercel
 
 Deploy the frontend only after the backend is healthy. Run the production helper
 from the repository root, not from the `frontend` folder.
@@ -279,7 +267,7 @@ Then test the main user flows:
 - checkout
 - admin dashboard
 
-### 7. Final production smoke test
+### 6. Final production smoke test
 
 After all deploy steps are complete, verify the full live stack one more time:
 
