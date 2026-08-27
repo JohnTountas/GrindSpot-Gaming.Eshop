@@ -6,19 +6,38 @@ function canUseBrowserStorage(): boolean {
   return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
 }
 
+function safelyRemoveStoredReachability(): void {
+  if (!canUseBrowserStorage()) {
+    return;
+  }
+
+  try {
+    window.localStorage.removeItem(BACKEND_REACHABLE_STORAGE_KEY);
+  } catch {
+    // Privacy mode or browser storage restrictions should not break the app.
+  }
+}
+
 function readBackendReachableTimestamp(): number | null {
   if (!canUseBrowserStorage()) {
     return null;
   }
 
-  const rawValue = window.localStorage.getItem(BACKEND_REACHABLE_STORAGE_KEY);
+  let rawValue: string | null = null;
+
+  try {
+    rawValue = window.localStorage.getItem(BACKEND_REACHABLE_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+
   if (!rawValue) {
     return null;
   }
 
   const parsedValue = Number(rawValue);
   if (!Number.isFinite(parsedValue) || parsedValue <= 0) {
-    window.localStorage.removeItem(BACKEND_REACHABLE_STORAGE_KEY);
+    safelyRemoveStoredReachability();
     return null;
   }
 
@@ -35,8 +54,8 @@ export function hasBackendBeenReachable(): boolean {
   }
 
   const isFresh = Date.now() - lastReachableAt < BACKEND_REACHABLE_TTL_MS;
-  if (!isFresh && canUseBrowserStorage()) {
-    window.localStorage.removeItem(BACKEND_REACHABLE_STORAGE_KEY);
+  if (!isFresh) {
+    safelyRemoveStoredReachability();
   }
 
   return isFresh;
@@ -50,7 +69,11 @@ export function markBackendReachable(): void {
   }
 
   if (canUseBrowserStorage()) {
-    window.localStorage.setItem(BACKEND_REACHABLE_STORAGE_KEY, String(Date.now()));
+    try {
+      window.localStorage.setItem(BACKEND_REACHABLE_STORAGE_KEY, String(Date.now()));
+    } catch {
+      // Some browsers or privacy modes may block storage writes.
+    }
   }
 
   window.dispatchEvent(new Event(BACKEND_REACHABLE_EVENT));

@@ -1,24 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BRAND_LOGO_SRC, BRAND_NAME, BRAND_TAGLINE } from "@/shared/brand/identity";
 import {
   hasBackendBeenReachable,
   subscribeToBackendReachable,
 } from "@/shared/api/backendReachability";
 import { pingBackendHealth } from "@/shared/api/health";
+import { getBackendWarmupContent, type WarmupState } from "./backendWarmupContent";
 
 const WARMUP_ENABLED = import.meta.env.VITE_ENABLE_BACKEND_WARMUP_OVERLAY === "true";
 const OVERLAY_REVEAL_DELAY_MS = 2200;
 const RETRY_DELAY_MS = 2500;
 const REQUEST_TIMEOUT_MS = 8000;
 const FAILSAFE_DISMISS_DELAY_MS = 15000;
-
-type WarmupState = "checking" | "waking";
+const OVERLAY_EXIT_DURATION_MS = 260;
 
 // Covers the initial Render cold start with a branded storefront-level overlay.
 export function BackendWarmupOverlay() {
   const [ready, setReady] = useState(!WARMUP_ENABLED || hasBackendBeenReachable());
   const [visible, setVisible] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [state, setState] = useState<WarmupState>("checking");
+  const visibleRef = useRef(visible);
+
+  useEffect(() => {
+    visibleRef.current = visible;
+  }, [visible]);
 
   useEffect(() => {
     if (!WARMUP_ENABLED || ready) {
@@ -27,9 +33,21 @@ export function BackendWarmupOverlay() {
 
     let isMounted = true;
     let retryTimeoutId: number | undefined;
-    let revealTimeoutId: number | undefined;
-    let failsafeTimeoutId: number | undefined;
+    let dismissTimeoutId: number | undefined;
     let activeController: AbortController | null = null;
+    const revealTimeoutId = window.setTimeout(() => {
+      if (isMounted && !ready) {
+        setIsClosing(false);
+        setVisible(true);
+      }
+    }, OVERLAY_REVEAL_DELAY_MS);
+    const failsafeTimeoutId = window.setTimeout(() => {
+      if (!isMounted) {
+        return;
+      }
+
+      dismissOverlay();
+    }, FAILSAFE_DISMISS_DELAY_MS);
 
     const dismissOverlay = () => {
       if (!isMounted) {
@@ -49,28 +67,26 @@ export function BackendWarmupOverlay() {
       }
 
       activeController?.abort();
-      setReady(true);
-      setVisible(false);
-    };
 
-    const unsubscribeFromReachability = subscribeToBackendReachable(dismissOverlay);
-
-    revealTimeoutId = window.setTimeout(() => {
-      if (isMounted && !ready) {
-        setVisible(true);
-      }
-    }, OVERLAY_REVEAL_DELAY_MS);
-
-    // A readiness overlay should never become a permanent blocker. If a browser
-    // rejects or delays the cross-origin health probe differently, we prefer to
-    // fall back to the page's normal loading states instead of trapping the user.
-    failsafeTimeoutId = window.setTimeout(() => {
-      if (!isMounted) {
+      if (!visibleRef.current) {
+        setReady(true);
+        setVisible(false);
         return;
       }
 
-      dismissOverlay();
-    }, FAILSAFE_DISMISS_DELAY_MS);
+      setIsClosing(true);
+      dismissTimeoutId = window.setTimeout(() => {
+        if (!isMounted) {
+          return;
+        }
+
+        setVisible(false);
+        setReady(true);
+        setIsClosing(false);
+      }, OVERLAY_EXIT_DURATION_MS);
+    };
+
+    const unsubscribeFromReachability = subscribeToBackendReachable(dismissOverlay);
 
     async function checkBackendHealth() {
       activeController?.abort();
@@ -124,6 +140,10 @@ export function BackendWarmupOverlay() {
       if (failsafeTimeoutId) {
         window.clearTimeout(failsafeTimeoutId);
       }
+
+      if (dismissTimeoutId) {
+        window.clearTimeout(dismissTimeoutId);
+      }
     };
   }, [ready]);
 
@@ -131,13 +151,15 @@ export function BackendWarmupOverlay() {
     return null;
   }
 
-  const statusMessage =
-    state === "checking"
-      ? "Syncing the storefront and checking service readiness."
-      : "Please wait while the backend wakes up...";
+  const content = getBackendWarmupContent(state);
 
   return (
-    <div aria-live="polite" aria-busy="true" className="backend-warmup-overlay" role="status">
+    <div
+      aria-live="polite"
+      aria-busy="true"
+      className={`backend-warmup-overlay${isClosing ? " is-closing" : ""}`}
+      role="status"
+    >
       <div className="backend-warmup-panel">
         <div className="backend-warmup-emblem" aria-hidden="true">
           <div className="backend-warmup-ring backend-warmup-ring--outer" />
@@ -146,8 +168,10 @@ export function BackendWarmupOverlay() {
         </div>
 
         <p className="backend-warmup-brand">{BRAND_NAME}</p>
-        <h2 className="backend-warmup-title text-balance">Loading the arena</h2>
-        <p className="backend-warmup-status">{statusMessage}</p>
+        <p className="backend-warmup-phase">{content.phaseLabel}</p>
+        <h2 className="backend-warmup-title">{content.title}</h2>
+        <p className="backend-warmup-status">{content.statusMessage}</p>
+        <p className="backend-warmup-detail">{content.detailMessage}</p>
         <div className="backend-warmup-progress" aria-hidden="true">
           <span />
         </div>
