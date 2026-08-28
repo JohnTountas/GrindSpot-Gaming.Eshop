@@ -4,11 +4,34 @@ Gaming e-shop monorepo with:
 
 - `frontend`: React + TypeScript + Vite
 - `backend`: Express + TypeScript + Prisma
-- `production`: Fly.io single-host deployment
+- `production`: Fly.io app with Supabase Postgres
 
 ## Production URL
 
 - `https://grindspot-fly-app.fly.dev`
+
+## Architecture
+
+```text
+Users
+  |
+  v
+https://grindspot-fly-app.fly.dev
+  |
+  v
+Fly.io app: grindspot-fly-app
+  |
+  |-- Frontend SPA build served by Express
+  |-- Backend API on the same origin
+  |-- Prisma ORM
+  |
+  v
+Supabase Postgres
+```
+
+Operational details live in `OPERATIONS.md`.
+
+Path examples in this document use `C:\folder-path\` as a sample location only.
 
 ## Repo Layout
 
@@ -17,10 +40,12 @@ GrindSpot-Gaming.Eshop/
 |- frontend/
 |- backend/
 |- scripts/
+|- backups/
 |- Dockerfile
 |- fly.toml
 |- package.json
 |- README.md
+|- OPERATIONS.md
 ```
 
 ## Local Development
@@ -28,7 +53,7 @@ GrindSpot-Gaming.Eshop/
 From the project root:
 
 ```powershell
-cd "Directory-path"
+cd "C:\folder-path\"
 npm install
 npm run dev:db
 npm run db:prepare
@@ -45,32 +70,16 @@ Useful local URLs:
 If something is already running:
 
 ```powershell
+cd "C:\folder-path\"
 npm run dev:stop
 ```
 
-## Deploy Commands
+## Production Deploy
 
-Use these commands every time you want to deploy new changes to Fly.io:
-
-```powershell
-cd "Directory-path"
-$env:FLY_ACCESS_TOKEN="MY-PERSONAL-TOKEN"
-npm run deploy:fly
-```
-
-After the deploy finishes, verify it with:
+Standard deploy flow:
 
 ```powershell
-npm run fly:status
-npm run fly:logs
-```
-
-## Recommended Deploy Routine
-
-Run this full routine before a production deploy:
-
-```powershell
-cd "Directory-path"
+cd "C:\folder-path\"
 cd frontend
 npm run lint
 npm run type-check
@@ -82,17 +91,25 @@ npm run type-check
 npm run test
 npm run build
 cd ..
-$env:FLY_ACCESS_TOKEN="MY-PERSONAL-TOKEN"
+$env:FLY_ACCESS_TOKEN="MY_PERSONAL_ACCESS_TOKEN"
 npm run deploy:fly
+```
+
+Post-deploy verification:
+
+```powershell
+cd "C:\folder-path\"
+curl.exe -i https://grindspot-fly-app.fly.dev/health
 ```
 
 ## Fly Notes
 
 - App name: `grindspot-fly-app`
 - Main config file: `fly.toml`
-- Deploys build both frontend and backend from the root `Dockerfile`
-- Database migrations run automatically through Fly `release_command`
-- Frontend requests use relative `/api` paths
+- The root `Dockerfile` builds frontend and backend together
+- Fly runs Prisma migrations through the `release_command`
+- The frontend calls the backend through relative `/api` paths
+- The live health endpoint is `/health`
 
 ## Root Scripts
 
@@ -111,20 +128,21 @@ npm run deploy:fly
 
 ## Required Fly Secrets
 
-The production app expects these secrets to exist in Fly:
+The production app expects these secrets in Fly:
 
 - `DATABASE_URL`
 - `DIRECT_URL`
 - `JWT_SECRET`
 - `JWT_REFRESH_SECRET`
-- `CORS_ORIGIN`
 
-## Current Verification Status
+## Verification Status
 
-The current cleanup state has already passed local verification:
+The current production state was verified on `2026-08-29`:
 
-- Frontend: `lint`, `type-check`, `test`, `build`
-- Backend: `lint`, `type-check`, `test`, `build`
+- Fly deploy completed successfully
+- `https://grindspot-fly-app.fly.dev/health` returned `200 OK`
+- Database connectivity is working
+- Catalog is seeded with `50` products
 
 ## Current Limitation
 
