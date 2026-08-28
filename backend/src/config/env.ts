@@ -20,7 +20,8 @@ function isPlaceholderDatabaseUrl(value: string | undefined): boolean {
   );
 }
 
-// Resolves the runtime database URL, preferring the pooled app connection.
+// Prefer the app-facing connection string first and fall back to the direct
+// connection when operators only provide one managed Postgres URL.
 function resolveRuntimeDatabaseUrl(): string {
   const databaseUrl = process.env.DATABASE_URL?.trim();
   const directUrl = process.env.DIRECT_URL?.trim();
@@ -36,7 +37,8 @@ function resolveRuntimeDatabaseUrl(): string {
   return "";
 }
 
-// Supports a comma-separated allowlist for split frontend/backend deployments.
+// Keep CORS configurable so local development and cross-origin deployments can
+// share the same backend without code changes.
 function resolveCorsOrigins(): string[] {
   const rawOrigins = process.env.CORS_ORIGIN?.trim();
 
@@ -83,7 +85,8 @@ function resolveCookieSecure(sameSite: CookieSameSite): boolean {
 
 const cookieSameSite = resolveCookieSameSite();
 
-// Exposes normalized environment configuration for the backend runtime.
+// Export one normalized configuration object so boot code does not repeatedly
+// parse environment variables at call sites.
 export const config = {
   port: parseInt(process.env.PORT || "5000", 10),
   nodeEnv: process.env.NODE_ENV || "development",

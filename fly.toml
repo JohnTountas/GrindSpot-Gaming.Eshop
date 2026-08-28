@@ -1,0 +1,52 @@
+# Fly app configuration for the single-container production deployment.
+# The backend serves the built frontend from the same origin so auth cookies,
+# API traffic, and SPA routing stay aligned behind one Fly hostname.
+
+app = "grindspot-fly-app"
+primary_region = "lhr"
+
+[build]
+  # Build from the repo-root Dockerfile that compiles both apps together.
+  dockerfile = "Dockerfile"
+
+  [build.args]
+    # Same-origin API calls keep the frontend portable across preview/prod hosts.
+    VITE_API_URL = "/api"
+
+[deploy]
+  # Run schema migrations before the new release starts receiving traffic.
+  release_command = "node scripts/fly-release.js"
+  release_command_timeout = "10m"
+
+  [deploy.release_command_vm]
+    size = "shared-cpu-1x"
+    memory = "512mb"
+
+[env]
+  # Runtime environment consumed by the backend container.
+  NODE_ENV = "production"
+  PORT = "8080"
+  FRONTEND_DIST_PATH = "/app/frontend-dist"
+  CORS_ORIGIN = "https://grindspot-fly-app.fly.dev"
+  JWT_EXPIRES_IN = "15m"
+  JWT_REFRESH_EXPIRES_IN = "7d"
+
+  # Seed the initial catalog on first boot only; products are skipped if already present.
+  AUTO_SEED = "true"
+
+  # Fly runs migrations as a release command, so startup should skip them.
+  RUN_MIGRATIONS_ON_STARTUP = "false"
+  UPLOAD_DIR = "uploads"
+
+[http_service]
+  # Fly routes public HTTPS traffic to the backend process on port 8080.
+  internal_port = 8080
+  protocol = "tcp"
+  force_https = true
+  auto_start_machines = true
+  auto_stop_machines = "stop"
+  min_machines_running = 0
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

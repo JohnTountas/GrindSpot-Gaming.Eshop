@@ -11,6 +11,7 @@
     "start": "node dist/server.js",
     "migrate": "node scripts/prisma-cli.js migrate dev",
     "migrate:deploy": "node scripts/prisma-cli.js migrate deploy",
+    "restore:production": "node scripts/restore-production-export.js",
     "database": "npx tsx prisma/database.ts",
     "studio": "node scripts/prisma-studio.js",
     "lint": "eslint . --ext .ts",

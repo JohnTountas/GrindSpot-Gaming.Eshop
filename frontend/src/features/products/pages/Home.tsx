@@ -8,10 +8,6 @@ import { getApiErrorMessage } from '@/shared/api/error';
 import { addGuestCartItem } from '@/shared/cart/guestCart';
 import { useAuthSession } from '@/shared/auth/session';
 import {
-  markStorefrontWarmupReady,
-  resetStorefrontWarmupReady,
-} from '@/shared/components/feedback/storefrontWarmupReady';
-import {
   buildReviewSnapshot,
   getCompatibilityTags,
   getProductBrand,
@@ -41,57 +37,6 @@ import {
 
 const EMPTY_PRODUCTS: Product[] = [];
 const EMPTY_CATEGORIES: CategoryWithCount[] = [];
-const INITIAL_WARMUP_IMAGE_COUNT = 10;
-
-function getInitialWarmupImageUrls(hero: Product | undefined, products: Product[]): string[] {
-  const uniqueUrls = new Set<string>();
-
-  if (hero?.images[0]) {
-    uniqueUrls.add(hero.images[0]);
-  }
-
-  products.slice(0, INITIAL_WARMUP_IMAGE_COUNT).forEach((product) => {
-    const imageUrl = product.images[0];
-    if (imageUrl) {
-      uniqueUrls.add(imageUrl);
-    }
-  });
-
-  return Array.from(uniqueUrls);
-}
-
-async function preloadWarmupImages(imageUrls: string[]): Promise<void> {
-  if (typeof window === 'undefined' || imageUrls.length === 0) {
-    return;
-  }
-
-  await Promise.allSettled(
-    imageUrls.map(
-      (imageUrl) =>
-        new Promise<void>((resolve) => {
-          const image = new Image();
-          let settled = false;
-
-          const finish = () => {
-            if (settled) {
-              return;
-            }
-
-            settled = true;
-            resolve();
-          };
-
-          image.onload = finish;
-          image.onerror = finish;
-          image.src = imageUrl;
-
-          if (image.complete) {
-            finish();
-          }
-        })
-    )
-  );
-}
 
 function Home() {
   const navigate = useNavigate();
@@ -153,10 +98,6 @@ function Home() {
 
   const trendingProducts = useMemo(() => getTrendingProducts(products, reviewById), [products, reviewById]);
   const heroProduct = trendingProducts[0] ?? visibleProducts[0];
-  const initialWarmupImageUrls = useMemo(
-    () => getInitialWarmupImageUrls(heroProduct, visibleProducts),
-    [heroProduct, visibleProducts]
-  );
 
   const compareProducts = useMemo(
     () =>
@@ -172,10 +113,6 @@ function Home() {
   );
 
   useEffect(() => {
-    resetStorefrontWarmupReady();
-  }, []);
-
-  useEffect(() => {
     if (location.hash !== '#compare-panel' || compareProducts.length === 0) {
       return;
     }
@@ -189,37 +126,6 @@ function Home() {
       comparePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }, [location.hash, compareProducts.length]);
-
-  useEffect(() => {
-    if (productsQuery.isLoading || categoriesQuery.isLoading) {
-      return;
-    }
-
-    if (productsQuery.isError || categoriesQuery.isError) {
-      markStorefrontWarmupReady();
-      return;
-    }
-
-    let cancelled = false;
-
-    void preloadWarmupImages(initialWarmupImageUrls).then(() => {
-      if (cancelled) {
-        return;
-      }
-
-      markStorefrontWarmupReady();
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    categoriesQuery.isError,
-    categoriesQuery.isLoading,
-    initialWarmupImageUrls,
-    productsQuery.isError,
-    productsQuery.isLoading,
-  ]);
 
   const quickAdd = useQuickAddToCart({
     onMutate: (productId) => {

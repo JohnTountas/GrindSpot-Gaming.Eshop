@@ -4,6 +4,8 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 
+// Centralize the CORS decision so every environment uses the same allowlist
+// logic instead of duplicating origin checks around the app.
 function createCorsOptions(allowedCorsOrigins: string[]): CorsOptions {
   return {
     origin(requestOrigin, callback) {
@@ -36,6 +38,8 @@ export function registerCoreMiddleware(
   expressApplication.use(cookieParser());
 
   if (runningEnvironment === 'development') {
+    // Keep noisy request logging out of production while preserving a helpful
+    // local feedback loop during API work.
     expressApplication.use(morgan('dev'));
   }
 }

@@ -1,5 +1,6 @@
 import { config as envConfig } from '../config/env';
 
+// Central route contract used by middleware, docs, static serving, and tests.
 export const routePaths = {
   apiBase: '/api',
   apiDocs: '/docs',
@@ -7,6 +8,7 @@ export const routePaths = {
   uploadsPublicPath: '/uploads',
 } as const;
 
+// Resolve filesystem targets once so the boot sequence is deterministic.
 export const directoryPaths = {
   uploadsDirectory: envConfig.upload.uploadDir,
   frontendDistDirectory: process.env.FRONTEND_DIST_PATH || '',

@@ -9,11 +9,9 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { logout } from "@/features/auth/api/auth";
 import { clearSession, useAuthSession } from "@/shared/auth/session";
 import { useCartData } from "@/features/cart/hooks/useCartData";
-import { useBackendReachabilityRecovery } from "@/shared/api/useBackendReachabilityRecovery";
 import ToastHost from "@/shared/components/feedback/ToastHost";
 import { useWishlist } from "@/shared/shopping";
 import { showSuccessMessage } from "@/shared/ui/toast";
-import BackendWarmupOverlay from "@/shared/components/feedback/BackendWarmupOverlay";
 import LayoutFooter from "./components/LayoutFooter";
 import LayoutHeader from "./components/LayoutHeader";
 import FooterMessageModal from "./components/FooterMessageModal";
@@ -38,7 +36,6 @@ function Layout() {
   // Run this once at the shell level so every authenticated route benefits from
   // the same guest-to-account cart handoff.
   useGuestCartSync(authed, queryClient);
-  useBackendReachabilityRecovery(queryClient);
 
   // `instant` is not part of the standard ScrollBehavior union and browsers can
   // disagree on how to handle it. `auto` gives us the immediate jump we want
@@ -67,7 +64,6 @@ function Layout() {
 
   return (
     <div className="relative isolate min-h-screen overflow-x-clip bg-grain-gradient">
-      <BackendWarmupOverlay />
       <ToastHost />
       <a
         href="#main-content"

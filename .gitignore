@@ -5,7 +5,6 @@ node_modules/
 
 # Testing
 coverage/
-*.log
 
 # Production
 build/
@@ -56,10 +55,5 @@ backend/prisma/database.js
 
 # Database migration artifacts
 backups/
-supabase/.temp/
 
-# Local CLI/tool downloads
-tools/
-
-.vercel
 .env*
