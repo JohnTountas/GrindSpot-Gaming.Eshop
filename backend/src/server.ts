@@ -141,8 +141,9 @@ function redactDatabaseUrl(url: string): string {
   }
 }
 
-// Containers can come up before Postgres is ready. Retrying here avoids turning
-// a short-lived infrastructure race into a failed release.
+// Containers can come up before Postgres is ready. Retrying here warms the
+// database connection, but startup should not block the HTTP listener because
+// platforms like Fly only need the process to bind its port first.
 async function ensureDatabaseConnection(): Promise<void> {
   for (let attempt = 1; attempt <= DB_CONNECT_MAX_RETRIES; attempt += 1) {
     try {
@@ -167,11 +168,24 @@ async function ensureDatabaseConnection(): Promise<void> {
   }
 }
 
-// Boot order matters: if the database is unavailable, fail before binding the
-// port so health checks never see a half-ready API.
+// Keep database warm-up non-blocking so hosted platforms can see the process
+// listening on the expected port even while Postgres is still starting.
+async function warmDatabaseConnection(): Promise<void> {
+  try {
+    await ensureDatabaseConnection();
+  } catch (error) {
+    console.error(
+      "Database warm-up failed. HTTP server is still running, but dependent routes may return errors until the database becomes available.",
+      error
+    );
+  }
+}
+
+// Boot the HTTP listener first so Fly can verify the expected port binding,
+// then warm the database connection in the background.
 async function bootstrap(): Promise<void> {
-  await ensureDatabaseConnection();
   await startServer(app, serverPort, config.nodeEnv, serverHost);
+  void warmDatabaseConnection();
 }
 
 bootstrap().catch((error) => {
