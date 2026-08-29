@@ -54,7 +54,7 @@ export function SpecificationsEditor({
       <h3 className="text-lg font-semibold text-primary-900">Technical Specifications</h3>
       <form
         onSubmit={createSpecification}
-        className="mt-3 grid gap-2 md:grid-cols-[1fr_1fr_90px_140px]"
+        className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_110px_140px]"
       >
         <input
           value={specLabel}
@@ -79,7 +79,7 @@ export function SpecificationsEditor({
         <button
           type="submit"
           disabled={createSpecMutation.isPending}
-          className="rounded-xl bg-primary-800 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+          className="rounded-xl bg-primary-800 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60 md:col-span-2 xl:col-span-1"
         >
           Add spec
         </button>
@@ -118,7 +118,7 @@ function SpecificationRow({
 
   return (
     <div className="rounded-2xl border border-primary-300/70 bg-primary-100/70 p-3">
-      <div className="grid gap-2 md:grid-cols-[1fr_1fr_90px_auto_auto]">
+      <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_110px_auto_auto]">
         <input
           value={label}
           onChange={(event) => setLabel(event.target.value)}

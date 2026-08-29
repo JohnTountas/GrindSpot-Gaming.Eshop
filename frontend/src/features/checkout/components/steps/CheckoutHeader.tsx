@@ -27,7 +27,7 @@ export function CheckoutHeader({ isShippingComplete }: CheckoutHeaderProps) {
       <p className="mt-2 text-sm text-primary-600">
         Enter delivery details, choose a payment method, and confirm authorization.
       </p>
-      <div className="mt-4 grid gap-2 sm:grid-cols-3">
+      <div className="mt-4 grid gap-2 md:grid-cols-3">
         <p className={isShippingComplete ? COMPLETED_STEP_CLASS : ACTIVE_STEP_CLASS}>
           {CHECKOUT_PROGRESS_STEPS.shipping}
         </p>

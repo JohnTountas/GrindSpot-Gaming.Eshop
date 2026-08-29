@@ -43,7 +43,9 @@ export function ProductSelector({
           </option>
         ))}
       </select>
-      <p className="text-xs text-primary-600">{totalProducts} products available for management.</p>
+      <p className="text-xs leading-relaxed text-primary-600">
+        {totalProducts} products available for management.
+      </p>
     </aside>
   );
 }

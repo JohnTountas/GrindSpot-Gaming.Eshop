@@ -89,7 +89,7 @@ export function PaymentConfirmationPanel({
         </div>
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-3">
+      <div className="grid gap-2 md:grid-cols-3">
         <p className="rounded-xl border border-primary-300/70 bg-primary-100/72 px-3 py-2 text-sm font-semibold text-primary-900">
           Method: {selectedPaymentLabel}
         </p>
@@ -110,7 +110,7 @@ export function PaymentConfirmationPanel({
         </p>
       )}
 
-      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+      <div className="flex flex-col gap-2 md:flex-row md:flex-wrap">
         <button
           type="submit"
           disabled={isSubmitting}

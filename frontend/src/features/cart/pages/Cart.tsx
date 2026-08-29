@@ -95,7 +95,7 @@ function Cart() {
 
   return (
     <section className="space-y-5">
-      <header className="surface-card flex flex-wrap items-center justify-between gap-3 p-5">
+      <header className="surface-card flex flex-col items-start gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary-500">
             Shopping cart
@@ -180,7 +180,7 @@ function Cart() {
                     </p>
                   </div>
 
-                  <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:flex-nowrap">
+                  <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:flex-nowrap">
                     <button
                       type="button"
                       onClick={() =>
@@ -222,7 +222,7 @@ function Cart() {
                     </button>
                   </div>
 
-                  <p className="w-full text-sm font-semibold text-primary-900 sm:ml-auto sm:w-auto sm:text-right">
+                  <p className="w-full text-sm font-semibold text-primary-900 md:ml-auto md:w-auto md:text-right">
                     {isUpdating ? "Updating..." : formatCurrency(itemTotal(item))}
                   </p>
                 </article>

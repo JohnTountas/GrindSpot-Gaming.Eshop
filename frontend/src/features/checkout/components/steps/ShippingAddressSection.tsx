@@ -28,7 +28,7 @@ export function ShippingAddressSection({
       {SHIPPING_FIELD_ROWS.map((row) => (
         <div
           key={row.map((field) => field.key).join("-")}
-          className={row.length > 1 ? "grid grid-cols-1 gap-4 sm:grid-cols-2" : undefined}
+          className={row.length > 1 ? "grid grid-cols-1 gap-4 md:grid-cols-2" : undefined}
         >
           {row.map((field) => {
             const value = form[field.key];

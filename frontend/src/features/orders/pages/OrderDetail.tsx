@@ -72,7 +72,7 @@ function OrderDetail() {
             <p className="mt-2 text-sm text-primary-600">Placed on {formatDate(order.createdAt)}</p>
           </div>
 
-          <div className="w-full text-left sm:w-auto sm:text-right">
+          <div className="w-full text-left md:w-auto md:text-right">
             <p
               className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ${ORDER_STATUS_STYLES[order.status]}`}
             >
@@ -132,7 +132,7 @@ function OrderDetail() {
                     </p>
                   </div>
 
-                  <p className="w-full text-sm font-semibold text-primary-900 sm:w-auto sm:text-right">
+                  <p className="w-full text-sm font-semibold text-primary-900 md:w-auto md:text-right">
                     {formatCurrency(Number(item.priceAtPurchase) * item.quantity)}
                   </p>
                 </li>

@@ -127,7 +127,7 @@ function AdminDashboard() {
         }
       />
 
-      <section className="grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)]">
+      <section className="grid gap-5 2xl:grid-cols-[320px_minmax(0,1fr)]">
         <ProductSelector
           productSearch={productSearch}
           onSearchChange={setProductSearch}

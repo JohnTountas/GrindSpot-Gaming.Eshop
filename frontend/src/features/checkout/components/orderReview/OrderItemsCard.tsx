@@ -21,7 +21,7 @@ export function OrderItemsCard({ items }: OrderItemsCardProps) {
             key={item.id}
             className="flex flex-col items-start gap-1 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3"
           >
-            <p className="line-clamp-1 text-primary-800">
+            <p className="line-clamp-2 break-words text-primary-800">
               {item.quantity} x {item.product.title}
             </p>
             <p className="font-semibold text-primary-900">

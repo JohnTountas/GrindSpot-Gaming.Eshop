@@ -26,14 +26,14 @@ export function ComparePanel({ products, rows, onToggleCompare, onClear }: Compa
           Clear
         </button>
       </div>
-      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
         {products.map((product) => (
           <article
             key={product.id}
             className="rounded-xl border border-primary-300/70 bg-primary-100/70 p-3"
           >
             <p className="line-clamp-2 text-sm font-semibold text-primary-900">{product.title}</p>
-            <p className="mt-1 text-xs text-primary-600">
+            <p className="mt-1 break-words text-xs text-primary-600">
               {getCompatibilityTags(product).join(' | ')}
             </p>
             <button
@@ -52,7 +52,7 @@ export function ComparePanel({ products, rows, onToggleCompare, onClear }: Compa
         </p>
       ) : (
         <div className="mt-4 overflow-x-auto rounded-xl border border-primary-300/70">
-          <table className="w-full min-w-[640px] text-sm sm:min-w-[720px]">
+          <table className="w-full min-w-[560px] text-xs sm:min-w-[640px] sm:text-sm lg:min-w-[720px]">
             <thead className="bg-primary-100/75">
               <tr>
                 <th className="px-3 py-2 text-left font-semibold text-primary-900">Metric</th>
@@ -71,7 +71,7 @@ export function ComparePanel({ products, rows, onToggleCompare, onClear }: Compa
                 <tr key={row.label} className="border-t border-primary-300/65">
                   <th
                     scope="row"
-                    className="whitespace-nowrap bg-primary-100/45 px-3 py-2 text-left font-semibold text-primary-800"
+                    className="bg-primary-100/45 px-3 py-2 text-left font-semibold text-primary-800"
                   >
                     {row.label}
                   </th>

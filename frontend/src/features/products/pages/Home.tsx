@@ -248,7 +248,7 @@ function Home() {
       <TrendingProductsSection products={trendingProducts} />
       <CategoryShowcase onSelectCategory={setCategory} />
 
-      <section className="grid gap-5 xl:grid-cols-[300px_minmax(0,1fr)]">
+      <section className="grid gap-5 xl:grid-cols-[280px_minmax(0,1fr)] 2xl:grid-cols-[300px_minmax(0,1fr)]">
         <CatalogFiltersPanel
           categories={categories}
           brands={brands}
@@ -273,12 +273,12 @@ function Home() {
         />
 
         <div className="space-y-4">
-          <div className="surface-card flex flex-col items-start gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="surface-card flex flex-col items-start gap-2 p-4 md:flex-row md:items-center md:justify-between">
             <p className="text-sm text-primary-600">
               <span className="font-semibold text-primary-900">{visibleProducts.length}</span>{' '}
               products found
             </p>
-            <p className="text-xs uppercase tracking-[0.12em] text-primary-600">
+            <p className="text-left text-xs uppercase tracking-[0.12em] text-primary-600 md:text-right">
               {categories.reduce((sum, item) => sum + (item._count?.products ?? 0), 0)} total
               catalog items
             </p>

@@ -14,7 +14,7 @@ export function ProductReviewsCard({ review }: ProductReviewsCardProps) {
         {review.breakdown.map((row) => (
           <div
             key={row.stars}
-            className="grid grid-cols-[54px_minmax(0,1fr)_40px] items-center gap-2 sm:grid-cols-[60px_1fr_42px]"
+            className="grid grid-cols-[54px_minmax(0,1fr)_40px] items-center gap-2 md:grid-cols-[60px_1fr_42px]"
           >
             <p className="text-xs font-semibold text-primary-700">{row.stars} stars</p>
             <div className="h-2 rounded-full bg-primary-200">

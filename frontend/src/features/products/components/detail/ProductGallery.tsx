@@ -25,8 +25,10 @@ export function ProductGallery({
 }: ProductGalleryProps) {
   return (
     <article className="surface-card p-4 lg:col-span-7">
+      {/* A fixed aspect ratio keeps the media frame visually stable while the
+          loupe interaction and badges stay predictable across breakpoints. */}
       <div
-        className={`product-image-frame loupe-frame relative rounded-2xl border border-primary-300/70 bg-primary-100/68 ${
+        className={`product-image-frame loupe-frame relative aspect-square overflow-hidden rounded-2xl border border-primary-300/70 bg-primary-100/68 sm:aspect-[4/3] lg:aspect-[5/4] ${
           isLoupeActive ? 'is-loupe-active' : ''
         }`}
         role="button"
@@ -55,7 +57,7 @@ export function ProductGallery({
         <span className="absolute left-3 top-3 rounded-full border border-primary-300/50 bg-slate-100 px-2.5 py-1 text-[12px] font-bold uppercase tracking-[0.11em] text-blue-700 shadow-sm">
           {categoryLabel}
         </span>
-        <span className="pointer-events-none absolute bottom-3 right-3 rounded-full border border-primary-300/55 bg-slate-100 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.11em] text-blue-700 shadow-sm">
+        <span className="pointer-events-none absolute bottom-3 right-3 max-w-[calc(100%-1.5rem)] rounded-full border border-primary-300/55 bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.11em] text-blue-700 shadow-sm sm:text-[11px]">
           {isLoupeActive ? 'Zoom on' : 'Click for Zoom'}
         </span>
       </div>

@@ -22,7 +22,7 @@ function LayoutFooter({ currentYear, onOpenFooterMessage }: LayoutFooterProps) {
             <img
               src={BRAND_LOGO_SRC}
               alt={`${BRAND_NAME} logo`}
-              className="mx-auto h-12 w-auto max-w-full object-contain object-left md:mx-0 md:h-14"
+              className="mx-auto h-14 w-auto max-w-full object-contain object-left md:mx-0 md:h-16 lg:h-[4.5rem]"
             />
             <p className="mt-2 text-xs font-semibold uppercase tracking-[0.22em] text-accent-700">
               {BRAND_TAGLINE}
@@ -43,17 +43,17 @@ function LayoutFooter({ currentYear, onOpenFooterMessage }: LayoutFooterProps) {
           />
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-3 border-t border-accent-700/50 pt-4 text-center text-xs font-semibold uppercase tracking-[0.16em] text-primary-600 md:justify-between md:text-left">
+        <div className="flex flex-col items-center gap-3 border-t border-accent-700/50 pt-4 text-center text-xs font-semibold uppercase tracking-[0.16em] text-primary-600 sm:flex-row sm:flex-wrap sm:justify-center md:justify-between md:text-left">
           <p className="rounded-full border border-accent-700/60 bg-primary-100/70 px-3 py-1 text-accent-700">
             PCI secured checkout
           </p>
-          <p>Visa • Mastercard • PayPal • Apple Pay • Google Pay</p>
+          <p className="max-w-full text-balance">Visa • Mastercard • PayPal • Apple Pay • Google Pay</p>
           <p className="rounded-full border border-accent-700/60 bg-primary-100/70 px-3 py-1 text-accent-700">
             Free returns in 30 days
           </p>
         </div>
 
-        <p className="text-center text-xs font-medium text-primary-600 md:text-right">
+        <p className="text-center text-xs font-medium leading-relaxed text-primary-600 md:text-right">
           Created by
           <strong>
             <a

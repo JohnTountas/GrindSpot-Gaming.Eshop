@@ -266,7 +266,7 @@ function ProductDetail() {
         />
       </div>
 
-      <section className="grid gap-5 xl:grid-cols-2">
+      <section className="grid gap-5 2xl:grid-cols-2">
         <ProductSpecificationsCard specifications={specs} />
         <ProductReviewsCard review={review} />
       </section>

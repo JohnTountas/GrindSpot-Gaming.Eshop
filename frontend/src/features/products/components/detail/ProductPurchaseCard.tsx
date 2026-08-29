@@ -34,7 +34,7 @@ export function ProductPurchaseCard({
     <aside className="space-y-4 lg:col-span-5">
       <div className="surface-card space-y-4 p-5 lg:sticky lg:top-28">
         <p className="text-sm leading-relaxed text-primary-600">{product.description}</p>
-        <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col items-start gap-2 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-3xl font-bold text-primary-900">
               {formatCurrency(Number(product.price))}
@@ -97,8 +97,8 @@ export function ProductPurchaseCard({
           </button>
         </div>
 
-        <div className="rounded-2xl border border-primary-300/70 bg-primary-100/70 p-3 text-center text-xs font-semibold uppercase tracking-[0.14em] text-primary-600 sm:text-left">
-          • Visa • Mastercard • PayPal • Apple Pay • Google Pay
+        <div className="rounded-2xl border border-primary-300/70 bg-primary-100/70 p-3 text-center text-xs font-semibold uppercase leading-relaxed tracking-[0.14em] text-primary-600 sm:text-left">
+          Visa • Mastercard • PayPal • Apple Pay • Google Pay
         </div>
         <div className="flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-primary-600">
           <p className="rounded-full border border-primary-300/70 bg-primary-100/70 px-3 py-1">

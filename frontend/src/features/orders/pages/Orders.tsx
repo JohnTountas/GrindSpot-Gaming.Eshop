@@ -66,7 +66,7 @@ function Orders() {
   return (
     <section className="space-y-5">
       <header className="surface-card p-5 md:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-700">
               Control center
@@ -177,7 +177,7 @@ function Orders() {
                       </p>
                     </div>
 
-                    <div className="w-full text-left sm:w-auto sm:text-right">
+                    <div className="w-full text-left md:w-auto md:text-right">
                       <p
                         className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ${ORDER_STATUS_STYLES[order.status]}`}
                       >
@@ -189,7 +189,7 @@ function Orders() {
                     </div>
                   </div>
 
-                  <div className="mt-4 grid gap-2 sm:flex sm:flex-wrap sm:items-center">
+                  <div className="mt-4 grid gap-2 md:flex md:flex-wrap md:items-center">
                     <Link
                       to={`/orders/${order.id}`}
                       className="inline-flex justify-center rounded-xl bg-primary-800 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-900"

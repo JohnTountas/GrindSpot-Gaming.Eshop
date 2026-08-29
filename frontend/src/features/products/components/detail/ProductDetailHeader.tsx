@@ -8,7 +8,7 @@ interface ProductDetailHeaderProps {
 
 export function ProductDetailHeader({ product }: ProductDetailHeaderProps) {
   return (
-    <header className="surface-card flex flex-wrap items-center justify-between gap-3 p-5">
+    <header className="surface-card flex flex-col items-start gap-3 p-5 md:flex-row md:items-center md:justify-between">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-700">
           Product detail
@@ -20,7 +20,7 @@ export function ProductDetailHeader({ product }: ProductDetailHeaderProps) {
           {getProductBrand(product)} | {product.category?.name ?? 'Gaming'}
         </p>
       </div>
-      <div className="grid w-full gap-2 sm:flex sm:w-auto sm:flex-wrap">
+      <div className="grid w-full gap-2 md:flex md:w-auto md:flex-wrap">
         <Link
           to="/"
           className="rounded-full border border-primary-400/70 bg-primary-100/72 px-4 py-2.5 text-center text-sm font-semibold text-primary-800"

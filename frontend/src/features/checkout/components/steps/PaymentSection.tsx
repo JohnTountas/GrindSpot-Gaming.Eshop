@@ -71,7 +71,7 @@ export function PaymentSection({
         2. Confirmation
       </legend>
 
-      <p className="text-sm text-primary-700">
+      <p className="max-w-3xl text-sm leading-relaxed text-primary-700">
         Select how you want to pay. This flow sends only a tokenized payment intent reference to the
         order API, never raw card security values. All types of payment are fully encrypted.
       </p>
